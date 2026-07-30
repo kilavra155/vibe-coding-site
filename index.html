@@ -492,14 +492,13 @@ section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:64px; }
 <script>
 const SITE = {
   // — Ник и подзаголовок —
-  nick:    "NOVASPARK",                 // [ВПИШИ СВОЙ НИК]
+  nick:    "KILAVRA",                   // [ВПИШИ СВОЙ НИК]
   tagline: "Каждый стрим — как последний бой. Заходи, будет жарко.",
 
   // — Ссылки на соцсети (вставь свои URL; # = заглушка) —
   links: {
-    twitch:  "#",   // напр. "https://twitch.tv/novaspark"
-    youtube: "#",   // напр. "https://youtube.com/@novaspark"
-    tiktok:  "#"    // напр. "https://tiktok.com/@novaspark"
+    twitch:  "https://www.twitch.tv/kilavra3920",
+    tiktok:  "https://www.tiktok.com/@cursedofheaven1"
   },
 
   // — Обо мне (about = основной текст, lead = крупная фраза-врезка) —
@@ -546,7 +545,7 @@ const SITE = {
     { q:"Как поддержать канал?",
       a:"Самое ценное — быть в чате и делиться стримом с друзьями. Также доступны подписка, донаты и участие в целях стрима." },
     { q:"Делаешь ли ты монтаж / шортсы?",
-      a:"Да, лучшие моменты выходят в YouTube и TikTok. Поймал крутой клип на стриме — кидай в чат, добавлю в подборку." },
+      a:"Да, лучшие моменты выходят в TikTok. Поймал крутой клип на стриме — кидай в чат, добавлю в подборку." },
     { q:"Есть ли правила в чате?",
       a:"Три простых: без токсичности, без спойлеров и без рекламы без спроса. Всё остальное — на расслабоне." }
   ],
@@ -597,7 +596,6 @@ const SITE = {
           <p class="hero-tag reveal" id="hero-tag"></p>
           <div class="hero-links reveal">
             <a class="hero-link" id="cta-twitch"  href="#" target="_blank" rel="noopener">Twitch <span class="arr" aria-hidden="true">↗</span></a>
-            <a class="hero-link" id="cta-youtube" href="#" target="_blank" rel="noopener">YouTube <span class="arr" aria-hidden="true">↗</span></a>
             <a class="hero-link" id="cta-tiktok"  href="#" target="_blank" rel="noopener">TikTok <span class="arr" aria-hidden="true">↗</span></a>
           </div>
         </div>
@@ -691,7 +689,6 @@ const SITE = {
     <div>© <span id="year"></span> <span id="footer-nick">NOVASPARK</span></div>
     <nav class="footer-social" aria-label="Социальные сети">
       <a id="foot-twitch"  href="#" target="_blank" rel="noopener">Twitch</a>
-      <a id="foot-youtube" href="#" target="_blank" rel="noopener">YouTube</a>
       <a id="foot-tiktok"  href="#" target="_blank" rel="noopener">TikTok</a>
     </nav>
   </div>
@@ -751,7 +748,7 @@ const SITE = {
       el.removeAttribute("target");
     }
   }
-  ["twitch","youtube","tiktok"].forEach(function (k) {
+  ["twitch","tiktok"].forEach(function (k) {
     bindLink($("cta-" + k),  SITE.links[k]);
     bindLink($("foot-" + k), SITE.links[k]);
   });
