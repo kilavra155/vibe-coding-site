@@ -525,11 +525,17 @@ body.no-player .player{ display:none; }
    МОИ РАБОТЫ (слоты 9:16)
    =================================================================== */
 .works-note{ color:var(--ink-2); margin:0 0 28px; max-width:52ch; }
-.works-grid{ display:grid; gap:16px; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); }
+.works-grid{ display:grid; gap:18px; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); }
 .work .work-frame{
   aspect-ratio:9/16; margin:0 0 10px;
   display:flex; align-items:flex-end; justify-content:flex-start;
 }
+/* встройка TikTok */
+.work .work-embed{
+  border:1px solid var(--line); border-radius:4px; overflow:hidden;
+  background:#111; filter:none; padding:0;
+}
+.work .work-embed iframe{ width:100%; height:100%; border:0; display:block; }
 .work .work-title{ font-family:var(--ff-grot); font-weight:700; font-size:.92rem; margin:0; }
 .work .work-note{
   font-family:var(--ff-grot); font-size:.68rem; font-weight:600;
@@ -657,15 +663,13 @@ const SITE = {
         features:["от 5 минут", "сценарий нарезки", "цветокор + звук", "правки до финала"] }
     ],
 
-    // — Мои работы: место под примеры (замени .work-frame на видео/превью) —
-    worksNote: "Живые примеры — в TikTok. Ниже — место под работы.",
+    // — Мои работы. tiktokId = число из ссылки .../video/<ЭТО_ЧИСЛО>?...
+    //   Чтобы добавить работу — вставь новый объект с id ролика. Без tiktokId будет серый слот-заглушка. —
+    worksNote: "Мои работы — прямые встройки из TikTok. Нажми, чтобы посмотреть.",
     works: [
-      { title:"Работа 01", note:"TikTok • шортс" },
-      { title:"Работа 02", note:"Хайлайт • CS2" },
-      { title:"Работа 03", note:"Шортс • Valorant" },
-      { title:"Работа 04", note:"Нарезка • Apex" },
-      { title:"Работа 05", note:"Клип • момент" },
-      { title:"Работа 06", note:"Шортс • реакция" }
+      { title:"Работа 01", note:"TikTok",  tiktokId:"7620431321189338375" },
+      { title:"Работа 02", note:"TikTok",  tiktokId:"7621282009121295623" },
+      { title:"Работа 03", note:"TikTok",  tiktokId:"7659163313468624129" }
     ]
   }
 };
@@ -1048,13 +1052,23 @@ const SITE = {
       pg.appendChild(card);
     });
 
-    // работы (слоты)
+    // работы: встройка TikTok (если задан tiktokId) или серый слот-заглушка
     var wg = $("works-grid");
     M.works.forEach(function (w) {
       var el = document.createElement("article");
       el.className = "work";
-      el.innerHTML =
-        '<div class="work-frame frame"><span class="frame-tag">9:16 — место под работу</span></div>' +
+      var frame;
+      if (w.tiktokId) {
+        frame =
+          '<div class="work-frame work-embed">' +
+            '<iframe src="https://www.tiktok.com/player/v1/' + encodeURIComponent(w.tiktokId) + '" ' +
+              'title="' + escapeAttr(w.title) + '" loading="lazy" allow="autoplay; fullscreen; encrypted-media" ' +
+              'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>' +
+          '</div>';
+      } else {
+        frame = '<div class="work-frame frame"><span class="frame-tag">9:16 — место под работу</span></div>';
+      }
+      el.innerHTML = frame +
         '<h3 class="work-title">' + escapeHtml(w.title) + '</h3>' +
         '<p class="work-note">' + escapeHtml(w.note) + '</p>';
       wg.appendChild(el);
