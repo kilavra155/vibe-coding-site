@@ -123,10 +123,27 @@ a{ color:inherit; text-decoration:none; }
 }
 .nav a:hover{ color:var(--ink); background:rgba(22,21,15,.06); }
 
+/* Якорная навигация по секциям активной вкладки */
+.subnav{
+  display:flex; gap:2px;
+  padding-top:9px; padding-bottom:11px; margin-top:2px;
+  border-top:1px solid var(--line);
+  overflow-x:auto; scrollbar-width:none;
+}
+.subnav::-webkit-scrollbar{ display:none; }
+.subnav a{
+  white-space:nowrap; padding:5px 11px; border-radius:999px;
+  font-family:var(--ff-grot); font-size:.7rem; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--ink-2);
+  transition:color .2s, background .2s;
+}
+.subnav a:hover{ color:var(--ink); background:rgba(22,21,15,.06); }
+.subnav:empty{ display:none; }
+
 /* ===================================================================
    СЕКЦИИ / ЗАГОЛОВКИ
    =================================================================== */
-section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:64px; }
+section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:104px; }
 
 .sec-head{
   display:flex; align-items:baseline; gap:16px;
@@ -650,15 +667,15 @@ const SITE = {
            "Работаю с ритмом, звуком, субтитрами и динамикой — чтобы удержать зрителя с первой секунды. " +
            "Быстрые правки, аккуратные сроки, исходники не теряю. Связь и заказ — через Telegram.",
 
-    // — Тарифы (цены-заглушки, меняй смело) —
+    // — Тарифы (цены меняй смело) —
     pricing: [
-      { title:"Шортс / TikTok", price:"от 500 ₽", note:"1 вертикальный ролик",
+      { title:"Эдит", price:"$25", note:"короткий динамичный эдит",
         featured:false,
-        features:["до 60 секунд", "субтитры + звук", "1–2 правки", "срок 1–2 дня"] },
-      { title:"Хайлайт стрима", price:"от 1200 ₽", note:"нарезка лучших моментов",
+        features:["до 60 секунд", "эффекты + звук", "1–2 правки", "срок 1–2 дня"] },
+      { title:"Рилс / Shorts", price:"$45", note:"вертикальный ролик под соцсети",
         featured:true,
-        features:["до 3 минут", "подбор моментов", "саунд-дизайн", "до 3 правок"] },
-      { title:"Ролик под ключ", price:"от 3000 ₽", note:"полный монтаж",
+        features:["до 90 секунд", "субтитры + саунд-дизайн", "динамичная нарезка", "до 3 правок"] },
+      { title:"YouTube-ролик", price:"$100", note:"полный монтаж",
         featured:false,
         features:["от 5 минут", "сценарий нарезки", "цветокор + звук", "правки до финала"] }
     ],
@@ -691,6 +708,7 @@ const SITE = {
       <button class="tab-btn" id="tab-montage" role="tab" aria-selected="false" aria-controls="panel-montage" type="button">Монтаж</button>
     </div>
   </div>
+  <nav class="wrap subnav" id="subnav" aria-label="Навигация по разделам"></nav>
 </header>
 
 <main id="top">
@@ -815,7 +833,7 @@ const SITE = {
   </section>
 
   <!-- MONTAGE: ОБО МНЕ -->
-  <section>
+  <section id="m-about">
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="sec-index">01</span>
@@ -830,7 +848,7 @@ const SITE = {
   </section>
 
   <!-- MONTAGE: СТОИМОСТЬ -->
-  <section>
+  <section id="m-pricing">
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="sec-index">02</span>
@@ -842,7 +860,7 @@ const SITE = {
   </section>
 
   <!-- MONTAGE: МОИ РАБОТЫ -->
-  <section>
+  <section id="m-works">
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="sec-index">03</span>
@@ -1129,6 +1147,34 @@ const SITE = {
     montage: { btn: document.getElementById("tab-montage"), panel: document.getElementById("panel-montage") }
   };
 
+  // Секции для якорной навигации каждой вкладки
+  var SECTIONS = {
+    twitch: [
+      { id:"about",    label:"Обо мне" },
+      { id:"schedule", label:"Расписание" },
+      { id:"clips",    label:"Клипы" },
+      { id:"games",    label:"Игры" },
+      { id:"faq",      label:"FAQ" },
+      { id:"contacts", label:"Контакты" }
+    ],
+    montage: [
+      { id:"m-about",   label:"Обо мне" },
+      { id:"m-pricing", label:"Стоимость" },
+      { id:"m-works",   label:"Работы" }
+    ]
+  };
+  var subnav = document.getElementById("subnav");
+
+  function buildSubnav(name) {
+    subnav.innerHTML = "";
+    (SECTIONS[name] || []).forEach(function (s) {
+      var a = document.createElement("a");
+      a.href = "#" + s.id;
+      a.textContent = s.label;
+      subnav.appendChild(a);
+    });
+  }
+
   function activate(name, doScroll) {
     if (!tabs[name]) name = "twitch";
     Object.keys(tabs).forEach(function (k) {
@@ -1136,6 +1182,7 @@ const SITE = {
       tabs[k].btn.setAttribute("aria-selected", on ? "true" : "false");
       tabs[k].panel.hidden = !on;
     });
+    buildSubnav(name);
     // плеер — только на вкладке «Твич»
     document.body.classList.toggle("no-player", name === "montage");
     try { history.replaceState(null, "", name === "montage" ? "#montage" : "#"); } catch (e) {}
@@ -1157,8 +1204,10 @@ const SITE = {
     });
   });
 
-  // старт из hash (#montage)
-  activate(location.hash === "#montage" ? "montage" : "twitch", false);
+  // старт: монтаж, если hash = #montage или указывает на секцию монтажа (#m-…)
+  var h = location.hash;
+  var startMontage = h === "#montage" || /^#m-/.test(h);
+  activate(startMontage ? "montage" : "twitch", false);
 })();
 </script>
 
