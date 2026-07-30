@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NOVASPARK — стример</title>
-<meta name="description" content="Официальная страница стримера NOVASPARK: расписание, клипы, любимые игры и контакты.">
+<title>KILAVRA — стример</title>
+<meta name="description" content="Официальная страница стримера KILAVRA: расписание, клипы, игры, монтаж и контакты.">
 
 <!-- Google Fonts: единственное внешнее подключение.
      Playfair Display (fashion-serif, дисплей) + Archivo (гротеск) + Inter (текст). Все с кириллицей. -->
@@ -464,6 +464,86 @@ section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:64px; }
 }
 
 /* ===================================================================
+   ВКЛАДКИ (Твич / Монтаж)
+   =================================================================== */
+.tabs{ display:flex; gap:6px; flex:none; }
+.tab-btn{
+  font-family:var(--ff-grot); font-weight:800; font-size:.72rem;
+  letter-spacing:.12em; text-transform:uppercase;
+  padding:8px 15px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--line-2); background:transparent; color:var(--ink-2);
+  transition:background .2s, color .2s, border-color .2s;
+}
+.tab-btn:hover{ color:var(--ink); }
+.tab-btn[aria-selected="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+.tab-panel[hidden]{ display:none; }
+
+/* когда открыт «Монтаж» — прячем плеер и лишний отступ снизу */
+body.no-player{ padding-bottom:0; }
+body.no-player .player{ display:none; }
+
+/* ===================================================================
+   МОНТАЖ — hero
+   =================================================================== */
+.m-hero{ padding-top:clamp(40px, 7vw, 72px); }
+.m-eyebrow{
+  font-family:var(--ff-grot); font-size:.76rem; font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--ink-2); margin:0 0 16px;
+}
+.m-title{
+  font-family:var(--ff-grot); font-weight:900;
+  font-size:clamp(2.8rem, 16vw, 9rem); line-height:.88; margin:0;
+  text-transform:uppercase; letter-spacing:-.02em; overflow-wrap:anywhere;
+}
+.m-title .dot{ color:var(--accent); }
+.m-tag{ font-size:clamp(1rem, 2.6vw, 1.2rem); color:var(--ink-2); max-width:46ch; margin:20px 0 30px; }
+
+/* ===================================================================
+   СТОИМОСТЬ
+   =================================================================== */
+.pricing{ display:grid; gap:18px; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); }
+.price-card{
+  border:1px solid var(--line); border-radius:4px; padding:24px 22px;
+  display:flex; flex-direction:column; gap:14px;
+  transition:border-color .2s, transform .2s;
+}
+.price-card:hover{ border-color:var(--ink); transform:translateY(-4px); }
+.price-card.is-featured{ border-color:var(--ink); background:rgba(22,21,15,.035); }
+.price-badge{
+  align-self:flex-start; font-family:var(--ff-grot); font-weight:800;
+  font-size:.6rem; letter-spacing:.16em; text-transform:uppercase;
+  color:#fff; background:var(--accent); padding:3px 9px; border-radius:999px;
+}
+.price-name{ font-family:var(--ff-grot); font-weight:800; text-transform:uppercase; font-size:1.02rem; letter-spacing:.03em; }
+.price-value{ font-family:var(--ff-serif); font-weight:700; font-size:1.8rem; line-height:1; }
+.price-note{ color:var(--ink-2); font-size:.9rem; margin:-6px 0 0; }
+.price-feat{ list-style:none; margin:6px 0 0; padding:0; display:grid; gap:9px; }
+.price-feat li{ font-size:.92rem; padding-left:18px; position:relative; }
+.price-feat li::before{ content:"—"; position:absolute; left:0; color:var(--accent); }
+
+/* ===================================================================
+   МОИ РАБОТЫ (слоты 9:16)
+   =================================================================== */
+.works-note{ color:var(--ink-2); margin:0 0 28px; max-width:52ch; }
+.works-grid{ display:grid; gap:16px; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); }
+.work .work-frame{
+  aspect-ratio:9/16; margin:0 0 10px;
+  display:flex; align-items:flex-end; justify-content:flex-start;
+}
+.work .work-title{ font-family:var(--ff-grot); font-weight:700; font-size:.92rem; margin:0; }
+.work .work-note{
+  font-family:var(--ff-grot); font-size:.68rem; font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--ink-2); margin:2px 0 0;
+}
+.works-cta{
+  margin-top:36px; display:flex; flex-wrap:wrap; gap:12px 26px; align-items:center;
+}
+.works-cta .lead{
+  font-family:var(--ff-grot); font-weight:800; text-transform:uppercase;
+  letter-spacing:.06em; font-size:1rem;
+}
+
+/* ===================================================================
    ПОЯВЛЕНИЕ ПРИ СКРОЛЛЕ
    =================================================================== */
 .reveal{ opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
@@ -497,13 +577,14 @@ const SITE = {
 
   // — Ссылки на соцсети (вставь свои URL; # = заглушка) —
   links: {
-    twitch:  "https://www.twitch.tv/kilavra3920",
-    tiktok:  "https://www.tiktok.com/@cursedofheaven1"
+    twitch:   "https://www.twitch.tv/kilavra3920",
+    tiktok:   "https://www.tiktok.com/@cursedofheaven1",
+    telegram: "https://t.me/Cursedofheaven42"
   },
 
   // — Обо мне (about = основной текст, lead = крупная фраза-врезка) —
   aboutLead: "Ранкед без нервов, разбор ошибок вслух и чат, где не токсично.",
-  about: "Привет! Я NOVASPARK — стримлю шутеры и соревновательные игры уже пятый год. " +
+  about: "Привет! Я KILAVRA — стримлю шутеры и соревновательные игры уже пятый год. " +
          "Люблю сложные катки, retro-хардкор по выходным и разговоры с аудиторией между раундами. " +
          "Цель простая: провести с вами вечер так, чтобы захотелось вернуться завтра.",
 
@@ -545,16 +626,47 @@ const SITE = {
     { q:"Как поддержать канал?",
       a:"Самое ценное — быть в чате и делиться стримом с друзьями. Также доступны подписка, донаты и участие в целях стрима." },
     { q:"Делаешь ли ты монтаж / шортсы?",
-      a:"Да, лучшие моменты выходят в TikTok. Поймал крутой клип на стриме — кидай в чат, добавлю в подборку." },
+      a:"Да! Монтирую вертикальные ролики и хайлайты — цены и работы смотри во вкладке «Монтаж» вверху страницы." },
     { q:"Есть ли правила в чате?",
       a:"Три простых: без токсичности, без спойлеров и без рекламы без спроса. Всё остальное — на расслабоне." }
   ],
 
-  // — Контакты —
+  // — Контакты (почту поменяй на свою; TG/TikTok/Twitch берутся из links выше) —
   contacts: {
-    business: "business@novaspark.gg",
-    discord:  "discord.gg/novaspark",
-    email:    "hello@novaspark.gg"
+    email: "kilavra@example.com"   // [ВПИШИ ПОЧТУ или оставь для связи только TG]
+  },
+
+  // ===== ВКЛАДКА «МОНТАЖ» =====
+  montage: {
+    tagline: "Монтаж под TikTok и хайлайты стримов: динамичные шортсы, чистый звук, субтитры.",
+    aboutLead: "Беру сырьё со стрима и собираю ролик, который досматривают до конца.",
+    about: "Монтирую вертикальные видео для TikTok и Shorts, хайлайты стримов и клипы. " +
+           "Работаю с ритмом, звуком, субтитрами и динамикой — чтобы удержать зрителя с первой секунды. " +
+           "Быстрые правки, аккуратные сроки, исходники не теряю. Связь и заказ — через Telegram.",
+
+    // — Тарифы (цены-заглушки, меняй смело) —
+    pricing: [
+      { title:"Шортс / TikTok", price:"от 500 ₽", note:"1 вертикальный ролик",
+        featured:false,
+        features:["до 60 секунд", "субтитры + звук", "1–2 правки", "срок 1–2 дня"] },
+      { title:"Хайлайт стрима", price:"от 1200 ₽", note:"нарезка лучших моментов",
+        featured:true,
+        features:["до 3 минут", "подбор моментов", "саунд-дизайн", "до 3 правок"] },
+      { title:"Ролик под ключ", price:"от 3000 ₽", note:"полный монтаж",
+        featured:false,
+        features:["от 5 минут", "сценарий нарезки", "цветокор + звук", "правки до финала"] }
+    ],
+
+    // — Мои работы: место под примеры (замени .work-frame на видео/превью) —
+    worksNote: "Живые примеры — в TikTok. Ниже — место под работы.",
+    works: [
+      { title:"Работа 01", note:"TikTok • шортс" },
+      { title:"Работа 02", note:"Хайлайт • CS2" },
+      { title:"Работа 03", note:"Шортс • Valorant" },
+      { title:"Работа 04", note:"Нарезка • Apex" },
+      { title:"Работа 05", note:"Клип • момент" },
+      { title:"Работа 06", note:"Шортс • реакция" }
+    ]
   }
 };
 </script>
@@ -569,21 +681,18 @@ const SITE = {
 <!-- ВЕРХНЯЯ ПАНЕЛЬ -->
 <header class="topbar">
   <div class="wrap topbar-inner">
-    <a class="brand" href="#hero" id="brand">NOVASPARK<span class="dot">.</span></a>
-    <nav class="nav" aria-label="Основная навигация">
-      <ul>
-        <li><a href="#about">Обо мне</a></li>
-        <li><a href="#schedule">Расписание</a></li>
-        <li><a href="#clips">Клипы</a></li>
-        <li><a href="#games">Игры</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="#contacts">Контакты</a></li>
-      </ul>
-    </nav>
+    <a class="brand" href="#top" id="brand">KILAVRA<span class="dot">.</span></a>
+    <div class="tabs" role="tablist" aria-label="Разделы сайта">
+      <button class="tab-btn" id="tab-twitch"  role="tab" aria-selected="true"  aria-controls="panel-twitch"  type="button">Твич</button>
+      <button class="tab-btn" id="tab-montage" role="tab" aria-selected="false" aria-controls="panel-montage" type="button">Монтаж</button>
+    </div>
   </div>
 </header>
 
-<main>
+<main id="top">
+
+<!-- ================= ВКЛАДКА: ТВИЧ ================= -->
+<div class="tab-panel" id="panel-twitch" role="tabpanel" aria-labelledby="tab-twitch">
 
   <!-- 1. HERO -->
   <section class="hero" id="hero">
@@ -591,12 +700,13 @@ const SITE = {
       <div class="hero-grid">
         <div>
           <p class="eyebrow reveal">( vol. 01 ) &nbsp;—&nbsp; <span class="live">в эфире по расписанию</span></p>
-          <h1 class="hero-name reveal" id="hero-name">NOVASPARK</h1>
+          <h1 class="hero-name reveal" id="hero-name">KILAVRA</h1>
           <p class="hero-kicker reveal">Live-стример</p>
           <p class="hero-tag reveal" id="hero-tag"></p>
           <div class="hero-links reveal">
-            <a class="hero-link" id="cta-twitch"  href="#" target="_blank" rel="noopener">Twitch <span class="arr" aria-hidden="true">↗</span></a>
-            <a class="hero-link" id="cta-tiktok"  href="#" target="_blank" rel="noopener">TikTok <span class="arr" aria-hidden="true">↗</span></a>
+            <a class="hero-link" id="cta-twitch"   href="#" target="_blank" rel="noopener">Twitch <span class="arr" aria-hidden="true">↗</span></a>
+            <a class="hero-link" id="cta-tiktok"   href="#" target="_blank" rel="noopener">TikTok <span class="arr" aria-hidden="true">↗</span></a>
+            <a class="hero-link" id="cta-telegram" href="#" target="_blank" rel="noopener">Telegram <span class="arr" aria-hidden="true">↗</span></a>
           </div>
         </div>
         <figure class="hero-portrait frame reveal" aria-label="Портрет стримера">
@@ -681,15 +791,82 @@ const SITE = {
     </div>
   </section>
 
+</div><!-- /panel-twitch -->
+
+
+<!-- ================= ВКЛАДКА: МОНТАЖ ================= -->
+<div class="tab-panel" id="panel-montage" role="tabpanel" aria-labelledby="tab-montage" hidden>
+
+  <!-- MONTAGE HERO -->
+  <section class="m-hero">
+    <div class="wrap">
+      <p class="m-eyebrow reveal">видеомонтаж &nbsp;—&nbsp; шортсы · хайлайты · клипы</p>
+      <h1 class="m-title reveal">Монтаж<span class="dot">.</span></h1>
+      <p class="m-tag reveal" id="m-tag"></p>
+      <div class="hero-links reveal">
+        <a class="hero-link" id="m-tiktok"   href="#" target="_blank" rel="noopener">TikTok <span class="arr" aria-hidden="true">↗</span></a>
+        <a class="hero-link" id="m-telegram" href="#" target="_blank" rel="noopener">Заказать в Telegram <span class="arr" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MONTAGE: ОБО МНЕ -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-index">01</span>
+        <h2 class="sec-title">Обо мне</h2>
+        <span class="sec-note">editor</span>
+      </div>
+      <div class="about-grid reveal">
+        <p class="about-lead" id="m-about-lead"></p>
+        <p class="about-body" id="m-about-body"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MONTAGE: СТОИМОСТЬ -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-index">02</span>
+        <h2 class="sec-title">Стоимость</h2>
+        <span class="sec-note">прайс</span>
+      </div>
+      <div class="pricing reveal" id="pricing-grid"></div>
+    </div>
+  </section>
+
+  <!-- MONTAGE: МОИ РАБОТЫ -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-index">03</span>
+        <h2 class="sec-title">Мои работы</h2>
+        <span class="sec-note">portfolio</span>
+      </div>
+      <p class="works-note reveal" id="works-note"></p>
+      <div class="works-grid reveal" id="works-grid"></div>
+      <div class="works-cta reveal">
+        <span class="lead">Хочешь так же?</span>
+        <a class="hero-link" id="m-cta-tiktok"   href="#" target="_blank" rel="noopener">Смотреть в TikTok <span class="arr" aria-hidden="true">↗</span></a>
+        <a class="hero-link" id="m-cta-telegram" href="#" target="_blank" rel="noopener">Написать в Telegram <span class="arr" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /panel-montage -->
+
 </main>
 
 <!-- 8. FOOTER -->
 <footer class="site-footer">
   <div class="wrap footer-inner">
-    <div>© <span id="year"></span> <span id="footer-nick">NOVASPARK</span></div>
+    <div>© <span id="year"></span> <span id="footer-nick">KILAVRA</span></div>
     <nav class="footer-social" aria-label="Социальные сети">
-      <a id="foot-twitch"  href="#" target="_blank" rel="noopener">Twitch</a>
-      <a id="foot-tiktok"  href="#" target="_blank" rel="noopener">TikTok</a>
+      <a id="foot-twitch"   href="#" target="_blank" rel="noopener">Twitch</a>
+      <a id="foot-tiktok"   href="#" target="_blank" rel="noopener">TikTok</a>
+      <a id="foot-telegram" href="#" target="_blank" rel="noopener">Telegram</a>
     </nav>
   </div>
 </footer>
@@ -748,7 +925,7 @@ const SITE = {
       el.removeAttribute("target");
     }
   }
-  ["twitch","tiktok"].forEach(function (k) {
+  ["twitch","tiktok","telegram"].forEach(function (k) {
     bindLink($("cta-" + k),  SITE.links[k]);
     bindLink($("foot-" + k), SITE.links[k]);
   });
@@ -818,21 +995,69 @@ const SITE = {
     });
   })();
 
-  // — Контакты —
+  // — Контакты (Telegram / TikTok / Twitch из links + почта) —
+  function handleFromUrl(url){
+    var m = String(url).match(/@([\w.]+)/) || String(url).match(/\/([\w.]+)\/?$/);
+    return m ? "@" + m[1].replace(/^@/, "") : url;
+  }
   (function () {
-    var box = $("contacts-list"), c = SITE.contacts;
-    var rows = [
-      { label:"Сотрудничество", value:c.business, href:"mailto:" + c.business },
-      { label:"Discord",        value:c.discord,  href:/^https?:\/\//i.test(c.discord) ? c.discord : "https://" + c.discord.replace(/^\/+/, "") },
-      { label:"Почта",          value:c.email,    href:"mailto:" + c.email }
-    ];
+    var box = $("contacts-list"), L = SITE.links, c = SITE.contacts;
+    var rows = [];
+    if (L.telegram && L.telegram !== "#") rows.push({ label:"Telegram", value:handleFromUrl(L.telegram), href:L.telegram });
+    if (L.tiktok   && L.tiktok   !== "#") rows.push({ label:"TikTok",   value:handleFromUrl(L.tiktok),   href:L.tiktok });
+    if (L.twitch   && L.twitch   !== "#") rows.push({ label:"Twitch",   value:handleFromUrl(L.twitch),   href:L.twitch });
+    if (c && c.email && !/example\.com$/.test(c.email)) rows.push({ label:"Почта", value:c.email, href:"mailto:" + c.email });
     rows.forEach(function (r) {
       var row = document.createElement("div");
       row.className = "contact-row";
       row.innerHTML =
         '<span class="c-label">' + escapeHtml(r.label) + '</span>' +
-        '<a class="c-value" href="' + escapeAttr(r.href) + '">' + escapeHtml(r.value) + '</a>';
+        '<a class="c-value" href="' + escapeAttr(r.href) + '"' +
+          (/^https?:/i.test(r.href) ? ' target="_blank" rel="noopener"' : '') + '>' +
+          escapeHtml(r.value) + '</a>';
       box.appendChild(row);
+    });
+  })();
+
+  // — ВКЛАДКА «МОНТАЖ»: контент —
+  (function () {
+    var M = SITE.montage; if (!M) return;
+    $("m-tag").textContent        = M.tagline;
+    $("m-about-lead").textContent = M.aboutLead;
+    $("m-about-body").textContent = M.about;
+    $("works-note").textContent   = M.worksNote;
+
+    // соц-кнопки монтажа
+    bindLink($("m-tiktok"),      SITE.links.tiktok);
+    bindLink($("m-telegram"),    SITE.links.telegram);
+    bindLink($("m-cta-tiktok"),  SITE.links.tiktok);
+    bindLink($("m-cta-telegram"),SITE.links.telegram);
+
+    // тарифы
+    var pg = $("pricing-grid");
+    M.pricing.forEach(function (p) {
+      var card = document.createElement("div");
+      card.className = "price-card" + (p.featured ? " is-featured" : "");
+      var feats = (p.features || []).map(function (f) { return '<li>' + escapeHtml(f) + '</li>'; }).join("");
+      card.innerHTML =
+        (p.featured ? '<span class="price-badge">хит</span>' : '') +
+        '<div class="price-name">' + escapeHtml(p.title) + '</div>' +
+        '<div class="price-value">' + escapeHtml(p.price) + '</div>' +
+        '<p class="price-note">' + escapeHtml(p.note) + '</p>' +
+        '<ul class="price-feat">' + feats + '</ul>';
+      pg.appendChild(card);
+    });
+
+    // работы (слоты)
+    var wg = $("works-grid");
+    M.works.forEach(function (w) {
+      var el = document.createElement("article");
+      el.className = "work";
+      el.innerHTML =
+        '<div class="work-frame frame"><span class="frame-tag">9:16 — место под работу</span></div>' +
+        '<h3 class="work-title">' + escapeHtml(w.title) + '</h3>' +
+        '<p class="work-note">' + escapeHtml(w.note) + '</p>';
+      wg.appendChild(el);
     });
   })();
 
@@ -876,6 +1101,50 @@ const SITE = {
     });
   }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
   els.forEach(function (el) { io.observe(el); });
+})();
+
+
+/* ===================================================================
+   ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК (Твич / Монтаж)
+   =================================================================== */
+(function () {
+  var reduce = window.matchMedia &&
+               window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var tabs = {
+    twitch:  { btn: document.getElementById("tab-twitch"),  panel: document.getElementById("panel-twitch")  },
+    montage: { btn: document.getElementById("tab-montage"), panel: document.getElementById("panel-montage") }
+  };
+
+  function activate(name, doScroll) {
+    if (!tabs[name]) name = "twitch";
+    Object.keys(tabs).forEach(function (k) {
+      var on = k === name;
+      tabs[k].btn.setAttribute("aria-selected", on ? "true" : "false");
+      tabs[k].panel.hidden = !on;
+    });
+    // плеер — только на вкладке «Твич»
+    document.body.classList.toggle("no-player", name === "montage");
+    try { history.replaceState(null, "", name === "montage" ? "#montage" : "#"); } catch (e) {}
+    if (doScroll) window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  }
+
+  tabs.twitch.btn.addEventListener("click",  function () { activate("twitch", true); });
+  tabs.montage.btn.addEventListener("click", function () { activate("montage", true); });
+
+  // стрелки влево/вправо между вкладками
+  [tabs.twitch.btn, tabs.montage.btn].forEach(function (b) {
+    b.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        var next = e.key === "ArrowRight" ? "montage" : "twitch";
+        activate(next, false);
+        tabs[next].btn.focus();
+      }
+    });
+  });
+
+  // старт из hash (#montage)
+  activate(location.hash === "#montage" ? "montage" : "twitch", false);
 })();
 </script>
 
