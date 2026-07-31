@@ -695,7 +695,6 @@ const T = {
       { q:"Есть ли правила в чате?",
         a:"Три простых: без токсичности, без спойлеров и без рекламы без спроса. Всё остальное — на расслабоне." }
     ],
-    email: "kilavra@example.com",   // [ВПИШИ ПОЧТУ или оставь для связи только TG]
     montage: {
       tagline: "Монтаж под TikTok и хайлайты стримов: динамичные шортсы, чистый звук, субтитры.",
       aboutLead: "Беру сырьё со стрима и собираю ролик, который досматривают до конца.",
@@ -780,7 +779,6 @@ const T = {
       { q:"Are there chat rules?",
         a:"Three simple ones: no toxicity, no spoilers, no ads without asking. Everything else is chill." }
     ],
-    email: "kilavra@example.com",
     montage: {
       tagline: "Editing for TikTok and stream highlights: dynamic shorts, clean audio, subtitles.",
       aboutLead: "I take raw stream footage and cut a video people watch to the end.",
@@ -1114,7 +1112,6 @@ const T = {
     if (Lk.telegram && Lk.telegram!=="#") rows.push({label:"Telegram", value:handleFromUrl(Lk.telegram), href:Lk.telegram});
     if (Lk.tiktok   && Lk.tiktok!=="#")   rows.push({label:"TikTok",   value:handleFromUrl(Lk.tiktok),   href:Lk.tiktok});
     if (Lk.twitch   && Lk.twitch!=="#")   rows.push({label:"Twitch",   value:handleFromUrl(Lk.twitch),   href:Lk.twitch});
-    if (L.email && !/example\.com$/.test(L.email)) rows.push({label:L.ui.emailLabel, value:L.email, href:"mailto:"+L.email});
     rows.forEach(function(r){
       var row = document.createElement("div"); row.className="contact-row";
       row.innerHTML =
