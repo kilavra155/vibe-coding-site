@@ -249,6 +249,7 @@ section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:104px; }
 .hero-portrait img{
   position:absolute; inset:0; z-index:1;
   width:100%; height:100%; object-fit:cover; display:block;
+  object-position:50% 42%;   /* кадрируем так, чтобы арка-тории попадала в центр */
 }
 
 /* ===================================================================
@@ -495,6 +496,26 @@ section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:104px; }
 .tab-btn[aria-selected="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
 .tab-panel[hidden]{ display:none; }
 
+/* правая группа шапки: язык + вкладки */
+.top-right{ display:flex; align-items:center; gap:10px; min-width:0; }
+.lang{ display:flex; gap:3px; flex:none; }
+.lang-btn{
+  font-family:var(--ff-grot); font-weight:800; font-size:.66rem;
+  letter-spacing:.08em; padding:6px 9px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--line-2); background:transparent; color:var(--ink-2);
+  transition:background .2s, color .2s, border-color .2s;
+}
+.lang-btn:hover{ color:var(--ink); }
+.lang-btn[aria-pressed="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+@media (max-width:560px){
+  .brand{ font-size:.8rem; letter-spacing:.06em; }
+  .topbar-inner{ gap:8px; }
+  .top-right{ gap:6px; }
+  .tabs{ gap:4px; }
+  .tab-btn{ padding:7px 10px; font-size:.64rem; letter-spacing:.06em; }
+  .lang-btn{ padding:6px 7px; font-size:.6rem; }
+}
+
 /* когда открыт «Монтаж» — прячем плеер и лишний отступ снизу */
 body.no-player{ padding-bottom:0; }
 body.no-player .player{ display:none; }
@@ -593,101 +614,194 @@ body.no-player .player{ display:none; }
      Меняешь значения ниже — остальное подставляется автоматически.
      =================================================================== -->
 <script>
+// ===== НЕЙТРАЛЬНЫЕ ДАННЫЕ (одинаковы для обоих языков) =====
 const SITE = {
-  // — Ник и подзаголовок —
-  nick:    "KILAVRA",                   // [ВПИШИ СВОЙ НИК]
-  tagline: "Каждый стрим — как последний бой. Заходи, будет жарко.",
-
-  // — Ссылки на соцсети (вставь свои URL; # = заглушка) —
+  nick: "KILAVRA",                                    // [ВПИШИ СВОЙ НИК]
   links: {
     twitch:   "https://www.twitch.tv/kilavra3920",
     tiktok:   "https://www.tiktok.com/@cursedofheaven1",
     telegram: "https://t.me/Cursedofheaven42"
   },
-
-  // — Обо мне (about = основной текст, lead = крупная фраза-врезка) —
-  aboutLead: "Ранкед без нервов, разбор ошибок вслух и чат, где не токсично.",
-  about: "Привет! Я KILAVRA — стримлю шутеры и соревновательные игры уже пятый год. " +
-         "Люблю сложные катки, retro-хардкор по выходным и разговоры с аудиторией между раундами. " +
-         "Цель простая: провести с вами вечер так, чтобы захотелось вернуться завтра.",
-
-  // — Расписание: 7 дней (Пн..Вс). off:true — выходной без стрима. —
-  schedule: [
-    { dow:"Понедельник", game:"Valorant — ранкед",       time:"19:00 – 23:00" },
-    { dow:"Вторник",     game:"Apex Legends",             time:"19:00 – 23:00" },
-    { dow:"Среда",       game:"Разбор + общение с чатом", time:"20:00 – 23:00" },
-    { dow:"Четверг",     game:"Counter-Strike 2",         time:"19:00 – 23:00" },
-    { dow:"Пятница",     game:"Games night / рулетка игр", time:"20:00 – 01:00" },
-    { dow:"Суббота",     game:"Retro-хардкор марафон",     time:"16:00 – 22:00" },
-    { dow:"Воскресенье", game:"Выходной — отдыхаем",       time:"—", off:true }
+  // id роликов TikTok для «Мои работы» (число из ссылки .../video/<ЭТО_ЧИСЛО>).
+  // Подписи к работам — в переводах ниже (montage.works), по порядку.
+  works: [
+    { tiktokId:"7620431321189338375" },
+    { tiktokId:"7621282009121295623" },
+    { tiktokId:"7659163313468624129" }
   ],
+  defaultLang: "ru"                                   // язык по умолчанию: "ru" или "en"
+};
 
-  // — Клипы: 3–4 карточки. Позже подставишь встройки в .clip-frame —
-  clips: [
-    { title:"1v5 клатч на Ascent",       note:"Valorant • момент недели" },
-    { title:"Финальный круг, 2 команды",  note:"Apex Legends • чемпион" },
-    { title:"Эйс с дигла на A-long",      note:"Counter-Strike 2 • хайлайт" },
-    { title:"Босс с первой попытки",      note:"Retro-марафон • no-hit" }
-  ],
-
-  // — Любимые игры —
-  games: [
-    { name:"Valorant",          tag:"Основной ранкед" },
-    { name:"Counter-Strike 2",  tag:"Классика" },
-    { name:"Apex Legends",      tag:"Battle royale" },
-    { name:"Elden Ring",        tag:"Соло-челленджи" },
-    { name:"Dead by Daylight",  tag:"Кооп с чатом" },
-    { name:"Retro-подборка",    tag:"Выходные" }
-  ],
-
-  // — FAQ —
-  faq: [
-    { q:"На каком железе стримишь?",
-      a:"ПК: Ryzen 7, 32 ГБ RAM и видеокарта уровня RTX. Стрим идёт в 1080p60, звук пишу на конденсаторный микрофон." },
-    { q:"Можно ли играть вместе?",
-      a:"Да! По пятницам на Games night беру зрителей в лобби. Очередь формируется прямо во время стрима — следи за чатом." },
-    { q:"Как поддержать канал?",
-      a:"Самое ценное — быть в чате и делиться стримом с друзьями. Также доступны подписка, донаты и участие в целях стрима." },
-    { q:"Делаешь ли ты монтаж / шортсы?",
-      a:"Да! Монтирую вертикальные ролики и хайлайты — цены и работы смотри во вкладке «Монтаж» вверху страницы." },
-    { q:"Есть ли правила в чате?",
-      a:"Три простых: без токсичности, без спойлеров и без рекламы без спроса. Всё остальное — на расслабоне." }
-  ],
-
-  // — Контакты (почту поменяй на свою; TG/TikTok/Twitch берутся из links выше) —
-  contacts: {
-    email: "kilavra@example.com"   // [ВПИШИ ПОЧТУ или оставь для связи только TG]
+// ===== ПЕРЕВОДЫ. Правишь ru и en — сайт переключается кнопкой RU/EN. =====
+const T = {
+  ru: {
+    htmlLang: "ru",
+    docTitle: "KILAVRA — стример",
+    metaDesc: "Официальная страница стримера KILAVRA: расписание, клипы, игры, монтаж и контакты.",
+    ui: {
+      tabTwitch:"Твич", tabMontage:"Монтаж",
+      heroVol:"( vol. 01 ) —", heroOnair:"в эфире по расписанию", heroKicker:"Live-стример",
+      secAbout:"Обо мне", noteProfile:"профиль",
+      secSchedule:"Расписание", noteMsk:"по МСК",
+      secClips:"Клипы", noteHighlights:"хайлайты",
+      secGames:"Любимые игры", noteRotation:"ротация",
+      secFaq:"FAQ", noteQuestions:"вопросы",
+      secContacts:"Контакты", noteConnect:"связь",
+      liveTag:"в эфире",
+      playerNow:"сейчас по расписанию", playerOffLabel:"сегодня выходной", playerOffTitle:"Ближайший стрим — завтра",
+      mEyebrow:"видеомонтаж — шортсы · хайлайты · клипы", mTitle:"Монтаж", mOrder:"Заказать в Telegram",
+      secMAbout:"Обо мне", noteEditor:"монтажёр",
+      secPricing:"Стоимость", notePricing:"прайс",
+      secWorks:"Мои работы", notePortfolio:"портфолио",
+      worksCtaLead:"Хочешь так же?", worksCtaWatch:"Смотреть в TikTok", worksCtaMsg:"Написать в Telegram",
+      priceBadge:"хит", emailLabel:"Почта"
+    },
+    aboutLead: "Ранкед без нервов, разбор ошибок вслух и чат, где не токсично.",
+    about: "Привет! Я KILAVRA — стримлю шутеры и соревновательные игры уже пятый год. " +
+           "Люблю сложные катки, retro-хардкор по выходным и разговоры с аудиторией между раундами. " +
+           "Цель простая: провести с вами вечер так, чтобы захотелось вернуться завтра.",
+    schedule: [
+      { dow:"Понедельник", game:"Valorant — ранкед",        time:"19:00 – 23:00" },
+      { dow:"Вторник",     game:"Apex Legends",             time:"19:00 – 23:00" },
+      { dow:"Среда",       game:"Разбор + общение с чатом",  time:"20:00 – 23:00" },
+      { dow:"Четверг",     game:"Counter-Strike 2",         time:"19:00 – 23:00" },
+      { dow:"Пятница",     game:"Games night / рулетка игр", time:"20:00 – 01:00" },
+      { dow:"Суббота",     game:"Retro-хардкор марафон",     time:"16:00 – 22:00" },
+      { dow:"Воскресенье", game:"Выходной — отдыхаем",       time:"—", off:true }
+    ],
+    clips: [
+      { title:"1v5 клатч на Ascent",      note:"Valorant • момент недели" },
+      { title:"Финальный круг, 2 команды", note:"Apex Legends • чемпион" },
+      { title:"Эйс с дигла на A-long",     note:"Counter-Strike 2 • хайлайт" },
+      { title:"Босс с первой попытки",     note:"Retro-марафон • no-hit" }
+    ],
+    games: [
+      { name:"Valorant",         tag:"Основной ранкед" },
+      { name:"Counter-Strike 2", tag:"Классика" },
+      { name:"Apex Legends",     tag:"Battle royale" },
+      { name:"Elden Ring",       tag:"Соло-челленджи" },
+      { name:"Dead by Daylight", tag:"Кооп с чатом" },
+      { name:"Retro-подборка",   tag:"Выходные" }
+    ],
+    faq: [
+      { q:"На каком железе стримишь?",
+        a:"ПК: Ryzen 7, 32 ГБ RAM и видеокарта уровня RTX. Стрим идёт в 1080p60, звук пишу на конденсаторный микрофон." },
+      { q:"Можно ли играть вместе?",
+        a:"Да! По пятницам на Games night беру зрителей в лобби. Очередь формируется прямо во время стрима — следи за чатом." },
+      { q:"Как поддержать канал?",
+        a:"Самое ценное — быть в чате и делиться стримом с друзьями. Также доступны подписка, донаты и участие в целях стрима." },
+      { q:"Делаешь ли ты монтаж / шортсы?",
+        a:"Да! Монтирую вертикальные ролики и хайлайты — цены и работы смотри во вкладке «Монтаж» вверху страницы." },
+      { q:"Есть ли правила в чате?",
+        a:"Три простых: без токсичности, без спойлеров и без рекламы без спроса. Всё остальное — на расслабоне." }
+    ],
+    email: "kilavra@example.com",   // [ВПИШИ ПОЧТУ или оставь для связи только TG]
+    montage: {
+      tagline: "Монтаж под TikTok и хайлайты стримов: динамичные шортсы, чистый звук, субтитры.",
+      aboutLead: "Беру сырьё со стрима и собираю ролик, который досматривают до конца.",
+      about: "Монтирую вертикальные видео для TikTok и Shorts, хайлайты стримов и клипы. " +
+             "Работаю с ритмом, звуком, субтитрами и динамикой — чтобы удержать зрителя с первой секунды. " +
+             "Быстрые правки, аккуратные сроки, исходники не теряю. Связь и заказ — через Telegram.",
+      worksNote: "Мои работы — прямые встройки из TikTok. Нажми, чтобы посмотреть.",
+      pricing: [
+        { title:"Эдит", price:"$25", note:"короткий динамичный эдит", featured:false,
+          features:["до 60 секунд", "эффекты + звук", "1–2 правки", "срок 1–2 дня"] },
+        { title:"Рилс / Shorts", price:"$45", note:"вертикальный ролик под соцсети", featured:true,
+          features:["до 90 секунд", "субтитры + саунд-дизайн", "динамичная нарезка", "до 3 правок"] },
+        { title:"YouTube-ролик", price:"$100", note:"полный монтаж", featured:false,
+          features:["от 5 минут", "сценарий нарезки", "цветокор + звук", "правки до финала"] }
+      ],
+      works: [
+        { title:"Работа 01", note:"TikTok" },
+        { title:"Работа 02", note:"TikTok" },
+        { title:"Работа 03", note:"TikTok" }
+      ]
+    }
   },
 
-  // ===== ВКЛАДКА «МОНТАЖ» =====
-  montage: {
-    tagline: "Монтаж под TikTok и хайлайты стримов: динамичные шортсы, чистый звук, субтитры.",
-    aboutLead: "Беру сырьё со стрима и собираю ролик, который досматривают до конца.",
-    about: "Монтирую вертикальные видео для TikTok и Shorts, хайлайты стримов и клипы. " +
-           "Работаю с ритмом, звуком, субтитрами и динамикой — чтобы удержать зрителя с первой секунды. " +
-           "Быстрые правки, аккуратные сроки, исходники не теряю. Связь и заказ — через Telegram.",
-
-    // — Тарифы (цены меняй смело) —
-    pricing: [
-      { title:"Эдит", price:"$25", note:"короткий динамичный эдит",
-        featured:false,
-        features:["до 60 секунд", "эффекты + звук", "1–2 правки", "срок 1–2 дня"] },
-      { title:"Рилс / Shorts", price:"$45", note:"вертикальный ролик под соцсети",
-        featured:true,
-        features:["до 90 секунд", "субтитры + саунд-дизайн", "динамичная нарезка", "до 3 правок"] },
-      { title:"YouTube-ролик", price:"$100", note:"полный монтаж",
-        featured:false,
-        features:["от 5 минут", "сценарий нарезки", "цветокор + звук", "правки до финала"] }
+  en: {
+    htmlLang: "en",
+    docTitle: "KILAVRA — streamer",
+    metaDesc: "Official page of streamer & editor KILAVRA: schedule, clips, games, editing and contacts.",
+    ui: {
+      tabTwitch:"Twitch", tabMontage:"Editing",
+      heroVol:"( vol. 01 ) —", heroOnair:"live on schedule", heroKicker:"Live streamer",
+      secAbout:"About", noteProfile:"profile",
+      secSchedule:"Schedule", noteMsk:"MSK",
+      secClips:"Clips", noteHighlights:"highlights",
+      secGames:"Favorite games", noteRotation:"rotation",
+      secFaq:"FAQ", noteQuestions:"questions",
+      secContacts:"Contacts", noteConnect:"connect",
+      liveTag:"live",
+      playerNow:"now on schedule", playerOffLabel:"day off today", playerOffTitle:"Next stream — tomorrow",
+      mEyebrow:"video editing — shorts · highlights · clips", mTitle:"Editing", mOrder:"Order on Telegram",
+      secMAbout:"About", noteEditor:"editor",
+      secPricing:"Pricing", notePricing:"pricing",
+      secWorks:"My work", notePortfolio:"portfolio",
+      worksCtaLead:"Want the same?", worksCtaWatch:"Watch on TikTok", worksCtaMsg:"Message on Telegram",
+      priceBadge:"top", emailLabel:"Email"
+    },
+    aboutLead: "Ranked without the tilt, mistakes reviewed out loud, and a chat that isn't toxic.",
+    about: "Hi! I'm KILAVRA — I've been streaming shooters and competitive games for five years now. " +
+           "I love tough matches, retro hardcore on weekends, and chatting with the audience between rounds. " +
+           "The goal is simple: to spend the evening with you so you'll want to come back tomorrow.",
+    schedule: [
+      { dow:"Monday",    game:"Valorant — ranked",           time:"19:00 – 23:00" },
+      { dow:"Tuesday",   game:"Apex Legends",                time:"19:00 – 23:00" },
+      { dow:"Wednesday", game:"Reviews + chatting",          time:"20:00 – 23:00" },
+      { dow:"Thursday",  game:"Counter-Strike 2",            time:"19:00 – 23:00" },
+      { dow:"Friday",    game:"Games night / game roulette", time:"20:00 – 01:00" },
+      { dow:"Saturday",  game:"Retro hardcore marathon",     time:"16:00 – 22:00" },
+      { dow:"Sunday",    game:"Day off — resting",           time:"—", off:true }
     ],
-
-    // — Мои работы. tiktokId = число из ссылки .../video/<ЭТО_ЧИСЛО>?...
-    //   Чтобы добавить работу — вставь новый объект с id ролика. Без tiktokId будет серый слот-заглушка. —
-    worksNote: "Мои работы — прямые встройки из TikTok. Нажми, чтобы посмотреть.",
-    works: [
-      { title:"Работа 01", note:"TikTok",  tiktokId:"7620431321189338375" },
-      { title:"Работа 02", note:"TikTok",  tiktokId:"7621282009121295623" },
-      { title:"Работа 03", note:"TikTok",  tiktokId:"7659163313468624129" }
-    ]
+    clips: [
+      { title:"1v5 clutch on Ascent",        note:"Valorant • play of the week" },
+      { title:"Final circle, 2 squads",      note:"Apex Legends • champion" },
+      { title:"Ace with the Deagle, A-long", note:"Counter-Strike 2 • highlight" },
+      { title:"Boss on the first try",       note:"Retro marathon • no-hit" }
+    ],
+    games: [
+      { name:"Valorant",         tag:"Main ranked" },
+      { name:"Counter-Strike 2", tag:"Classic" },
+      { name:"Apex Legends",     tag:"Battle royale" },
+      { name:"Elden Ring",       tag:"Solo challenges" },
+      { name:"Dead by Daylight", tag:"Co-op with chat" },
+      { name:"Retro pack",       tag:"Weekends" }
+    ],
+    faq: [
+      { q:"What's your setup?",
+        a:"PC: Ryzen 7, 32 GB RAM and an RTX-class GPU. The stream runs at 1080p60, audio through a condenser mic." },
+      { q:"Can we play together?",
+        a:"Yes! On Fridays during Games night I invite viewers into the lobby. The queue forms live during the stream — watch the chat." },
+      { q:"How can I support the channel?",
+        a:"The most valuable thing is being in the chat and sharing the stream with friends. Subscriptions, donations and stream goals are also available." },
+      { q:"Do you edit videos / shorts?",
+        a:"Yes! I make vertical videos and highlights — check prices and work in the 'Editing' tab at the top." },
+      { q:"Are there chat rules?",
+        a:"Three simple ones: no toxicity, no spoilers, no ads without asking. Everything else is chill." }
+    ],
+    email: "kilavra@example.com",
+    montage: {
+      tagline: "Editing for TikTok and stream highlights: dynamic shorts, clean audio, subtitles.",
+      aboutLead: "I take raw stream footage and cut a video people watch to the end.",
+      about: "I edit vertical videos for TikTok and Shorts, stream highlights and clips. " +
+             "I work with pacing, sound, subtitles and dynamics — to hold the viewer from the first second. " +
+             "Fast revisions, tidy deadlines, I don't lose source files. Contact and orders — via Telegram.",
+      worksNote: "My work — direct TikTok embeds. Tap to watch.",
+      pricing: [
+        { title:"Edit", price:"$25", note:"short dynamic edit", featured:false,
+          features:["up to 60 seconds", "effects + sound", "1–2 revisions", "1–2 day turnaround"] },
+        { title:"Reels / Shorts", price:"$45", note:"vertical video for social", featured:true,
+          features:["up to 90 seconds", "subtitles + sound design", "dynamic cut", "up to 3 revisions"] },
+        { title:"YouTube video", price:"$100", note:"full edit", featured:false,
+          features:["from 5 minutes", "cut scenario", "color + sound", "revisions until final"] }
+      ],
+      works: [
+        { title:"Work 01", note:"TikTok" },
+        { title:"Work 02", note:"TikTok" },
+        { title:"Work 03", note:"TikTok" }
+      ]
+    }
   }
 };
 </script>
@@ -703,12 +817,18 @@ const SITE = {
 <header class="topbar">
   <div class="wrap topbar-inner">
     <a class="brand" href="#top" id="brand">KILAVRA<span class="dot">.</span></a>
-    <div class="tabs" role="tablist" aria-label="Разделы сайта">
-      <button class="tab-btn" id="tab-twitch"  role="tab" aria-selected="true"  aria-controls="panel-twitch"  type="button">Твич</button>
-      <button class="tab-btn" id="tab-montage" role="tab" aria-selected="false" aria-controls="panel-montage" type="button">Монтаж</button>
+    <div class="top-right">
+      <div class="lang" role="group" aria-label="Язык / Language">
+        <button class="lang-btn" id="lang-ru" data-lang="ru" type="button" aria-pressed="true">RU</button>
+        <button class="lang-btn" id="lang-en" data-lang="en" type="button" aria-pressed="false">EN</button>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Разделы / Sections">
+        <button class="tab-btn" id="tab-twitch"  role="tab" aria-selected="true"  aria-controls="panel-twitch"  type="button">Твич</button>
+        <button class="tab-btn" id="tab-montage" role="tab" aria-selected="false" aria-controls="panel-montage" type="button">Монтаж</button>
+      </div>
     </div>
   </div>
-  <nav class="wrap subnav" id="subnav" aria-label="Навигация по разделам"></nav>
+  <nav class="wrap subnav" id="subnav" aria-label="Навигация / Navigation"></nav>
 </header>
 
 <main id="top">
@@ -912,126 +1032,91 @@ const SITE = {
 
 
 <script>
-/* ===================================================================
-   РЕНДЕР КОНТЕНТА ИЗ SITE
-   =================================================================== */
 (function () {
-  var $ = function (id) { return document.getElementById(id); };
-
+  var $ = function (id){ return document.getElementById(id); };
   function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
   function escapeAttr(s){ return escapeHtml(s).replace(/"/g,"&quot;"); }
-
-  // — Мета —
-  document.title = SITE.nick + " — стример";
-  $("brand").innerHTML = escapeHtml(SITE.nick) + '<span class="dot">.</span>';
-  $("footer-nick").textContent = SITE.nick;
-  $("year").textContent = new Date().getFullYear();
-  $("edge-l").textContent = SITE.nick + " — live";
-
-  // — Ник в hero: вторая половина курсивом (editorial-контраст) —
-  (function () {
-    var n = SITE.nick, cut = Math.ceil(n.length / 2);
-    $("hero-name").innerHTML = escapeHtml(n.slice(0, cut)) + '<em>' + escapeHtml(n.slice(cut)) + '</em>';
-  })();
-
-  $("about-lead").textContent = SITE.aboutLead;
-  $("about-body").textContent = SITE.about;
-
-  // — Соц-ссылки (hero + footer) —
-  function bindLink(el, url) {
-    if (!el) return;
-    if (url && url !== "#") { el.setAttribute("href", url); }
-    else {
-      el.setAttribute("href", "#");
-      el.setAttribute("aria-disabled", "true");
-      el.removeAttribute("target");
-    }
-  }
-  ["twitch","tiktok","telegram"].forEach(function (k) {
-    bindLink($("cta-" + k),  SITE.links[k]);
-    bindLink($("foot-" + k), SITE.links[k]);
-  });
-
-  // — Определяем сегодняшний индекс (getDay 0=Вс..6=Сб → массив Пн..Вс) —
+  function setText(sel, txt){ var el = document.querySelector(sel); if (el) el.textContent = txt; }
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var todayIdx = (new Date().getDay() + 6) % 7;
+  var ARROW = ' <span class="arr" aria-hidden="true">↗</span>';
 
-  // — Расписание («трек-лист») —
-  (function () {
-    var box = $("tracklist");
-    SITE.schedule.forEach(function (d, i) {
+  // текущий язык
+  var lang = (SITE.defaultLang && T[SITE.defaultLang]) ? SITE.defaultLang : "ru";
+  try { var saved = localStorage.getItem("kilavra-lang"); if (saved && T[saved]) lang = saved; } catch(e){}
+
+  var activeTab = "twitch";
+
+  function bindLink(el, url){
+    if (!el) return;
+    if (url && url !== "#") { el.setAttribute("href", url); el.setAttribute("target","_blank"); el.removeAttribute("aria-disabled"); }
+    else { el.setAttribute("href","#"); el.setAttribute("aria-disabled","true"); el.removeAttribute("target"); }
+  }
+  function handleFromUrl(url){
+    var m = String(url).match(/@([\w.]+)/) || String(url).match(/\/([\w.]+)\/?$/);
+    return m ? "@" + m[1].replace(/^@/,"") : url;
+  }
+
+  // ——— РЕНДЕР СПИСКОВ ———
+  function renderSchedule(L){
+    var box = $("tracklist"); box.innerHTML = "";
+    L.schedule.forEach(function(d,i){
       var isToday = i === todayIdx;
       var row = document.createElement("div");
-      row.className = "track" + (d.off ? " is-off" : "") + (isToday ? " is-today" : "");
-      if (isToday) row.setAttribute("aria-current", "date");
+      row.className = "track" + (d.off ? " is-off":"") + (isToday ? " is-today":"");
+      if (isToday) row.setAttribute("aria-current","date");
       row.innerHTML =
-        '<span class="t-num">' + String(i + 1).padStart(2, "0") + '</span>' +
+        '<span class="t-num">' + String(i+1).padStart(2,"0") + '</span>' +
         '<div class="t-main">' +
           '<div class="t-day">' + escapeHtml(d.dow) +
-            (isToday ? '<span class="t-live">в эфире</span>' : '') + '</div>' +
+            (isToday ? '<span class="t-live">' + escapeHtml(L.ui.liveTag) + '</span>' : '') + '</div>' +
           '<div class="t-game">' + escapeHtml(d.game) + '</div>' +
         '</div>' +
         '<span class="t-time">' + escapeHtml(d.time) + '</span>';
       box.appendChild(row);
     });
-  })();
-
-  // — Клипы —
-  (function () {
-    var grid = $("clips-grid");
-    SITE.clips.forEach(function (c) {
-      var el = document.createElement("article");
-      el.className = "clip";
+  }
+  function renderClips(L){
+    var grid = $("clips-grid"); grid.innerHTML = "";
+    L.clips.forEach(function(c){
+      var el = document.createElement("article"); el.className="clip";
       el.innerHTML =
-        '<div class="clip-frame frame"><span class="frame-tag">clip 16:9</span>' +
-          '<span class="play" aria-hidden="true">▶</span></div>' +
+        '<div class="clip-frame frame"><span class="frame-tag">clip 16:9</span><span class="play" aria-hidden="true">▶</span></div>' +
         '<h3 class="clip-title">' + escapeHtml(c.title) + '</h3>' +
         '<p class="clip-note">' + escapeHtml(c.note) + '</p>';
       grid.appendChild(el);
     });
-  })();
-
-  // — Игры (нумерованный список) —
-  (function () {
-    var box = $("games-list");
-    SITE.games.forEach(function (g, i) {
-      var row = document.createElement("div");
-      row.className = "game-row";
+  }
+  function renderGames(L){
+    var box = $("games-list"); box.innerHTML = "";
+    L.games.forEach(function(g,i){
+      var row = document.createElement("div"); row.className="game-row";
       row.innerHTML =
-        '<span class="g-num">' + String(i + 1).padStart(3, "0") + '</span>' +
+        '<span class="g-num">' + String(i+1).padStart(3,"0") + '</span>' +
         '<span class="g-name">' + escapeHtml(g.name) + '</span>' +
         '<span class="g-tag">' + escapeHtml(g.tag) + '</span>';
       box.appendChild(row);
     });
-  })();
-
-  // — FAQ —
-  (function () {
-    var box = $("faq-list");
-    SITE.faq.forEach(function (f) {
-      var item = document.createElement("details");
-      item.className = "faq-item";
+  }
+  function renderFaq(L){
+    var box = $("faq-list"); box.innerHTML = "";
+    L.faq.forEach(function(f){
+      var item = document.createElement("details"); item.className="faq-item";
       item.innerHTML =
         '<summary>' + escapeHtml(f.q) + '<span class="sign" aria-hidden="true"></span></summary>' +
         '<div class="faq-answer">' + escapeHtml(f.a) + '</div>';
       box.appendChild(item);
     });
-  })();
-
-  // — Контакты (Telegram / TikTok / Twitch из links + почта) —
-  function handleFromUrl(url){
-    var m = String(url).match(/@([\w.]+)/) || String(url).match(/\/([\w.]+)\/?$/);
-    return m ? "@" + m[1].replace(/^@/, "") : url;
   }
-  (function () {
-    var box = $("contacts-list"), L = SITE.links, c = SITE.contacts;
-    var rows = [];
-    if (L.telegram && L.telegram !== "#") rows.push({ label:"Telegram", value:handleFromUrl(L.telegram), href:L.telegram });
-    if (L.tiktok   && L.tiktok   !== "#") rows.push({ label:"TikTok",   value:handleFromUrl(L.tiktok),   href:L.tiktok });
-    if (L.twitch   && L.twitch   !== "#") rows.push({ label:"Twitch",   value:handleFromUrl(L.twitch),   href:L.twitch });
-    if (c && c.email && !/example\.com$/.test(c.email)) rows.push({ label:"Почта", value:c.email, href:"mailto:" + c.email });
-    rows.forEach(function (r) {
-      var row = document.createElement("div");
-      row.className = "contact-row";
+  function renderContacts(L){
+    var box = $("contacts-list"); box.innerHTML = "";
+    var Lk = SITE.links, rows = [];
+    if (Lk.telegram && Lk.telegram!=="#") rows.push({label:"Telegram", value:handleFromUrl(Lk.telegram), href:Lk.telegram});
+    if (Lk.tiktok   && Lk.tiktok!=="#")   rows.push({label:"TikTok",   value:handleFromUrl(Lk.tiktok),   href:Lk.tiktok});
+    if (Lk.twitch   && Lk.twitch!=="#")   rows.push({label:"Twitch",   value:handleFromUrl(Lk.twitch),   href:Lk.twitch});
+    if (L.email && !/example\.com$/.test(L.email)) rows.push({label:L.ui.emailLabel, value:L.email, href:"mailto:"+L.email});
+    rows.forEach(function(r){
+      var row = document.createElement("div"); row.className="contact-row";
       row.innerHTML =
         '<span class="c-label">' + escapeHtml(r.label) + '</span>' +
         '<a class="c-value" href="' + escapeAttr(r.href) + '"' +
@@ -1039,175 +1124,193 @@ const SITE = {
           escapeHtml(r.value) + '</a>';
       box.appendChild(row);
     });
-  })();
-
-  // — ВКЛАДКА «МОНТАЖ»: контент —
-  (function () {
-    var M = SITE.montage; if (!M) return;
-    $("m-tag").textContent        = M.tagline;
-    $("m-about-lead").textContent = M.aboutLead;
-    $("m-about-body").textContent = M.about;
-    $("works-note").textContent   = M.worksNote;
-
-    // соц-кнопки монтажа
-    bindLink($("m-tiktok"),      SITE.links.tiktok);
-    bindLink($("m-telegram"),    SITE.links.telegram);
-    bindLink($("m-cta-tiktok"),  SITE.links.tiktok);
-    bindLink($("m-cta-telegram"),SITE.links.telegram);
-
-    // тарифы
-    var pg = $("pricing-grid");
-    M.pricing.forEach(function (p) {
+  }
+  function renderPricing(L){
+    var pg = $("pricing-grid"); pg.innerHTML = "";
+    L.montage.pricing.forEach(function(p){
       var card = document.createElement("div");
-      card.className = "price-card" + (p.featured ? " is-featured" : "");
-      var feats = (p.features || []).map(function (f) { return '<li>' + escapeHtml(f) + '</li>'; }).join("");
+      card.className = "price-card" + (p.featured ? " is-featured":"");
+      var feats = (p.features||[]).map(function(f){ return '<li>'+escapeHtml(f)+'</li>'; }).join("");
       card.innerHTML =
-        (p.featured ? '<span class="price-badge">хит</span>' : '') +
+        (p.featured ? '<span class="price-badge">'+escapeHtml(L.ui.priceBadge)+'</span>' : '') +
         '<div class="price-name">' + escapeHtml(p.title) + '</div>' +
         '<div class="price-value">' + escapeHtml(p.price) + '</div>' +
         '<p class="price-note">' + escapeHtml(p.note) + '</p>' +
         '<ul class="price-feat">' + feats + '</ul>';
       pg.appendChild(card);
     });
-
-    // работы: встройка TikTok (если задан tiktokId) или серый слот-заглушка
-    var wg = $("works-grid");
-    M.works.forEach(function (w) {
-      var el = document.createElement("article");
-      el.className = "work";
-      var frame;
-      if (w.tiktokId) {
-        frame =
-          '<div class="work-frame work-embed">' +
-            '<iframe src="https://www.tiktok.com/player/v1/' + encodeURIComponent(w.tiktokId) + '" ' +
-              'title="' + escapeAttr(w.title) + '" loading="lazy" allow="autoplay; fullscreen; encrypted-media" ' +
-              'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>' +
-          '</div>';
-      } else {
-        frame = '<div class="work-frame frame"><span class="frame-tag">9:16 — место под работу</span></div>';
-      }
+  }
+  function renderWorks(L){
+    var wg = $("works-grid"); wg.innerHTML = "";
+    var ids = SITE.works || [];
+    L.montage.works.forEach(function(w,i){
+      var id = ids[i] && ids[i].tiktokId;
+      var el = document.createElement("article"); el.className="work";
+      var frame = id
+        ? '<div class="work-frame work-embed"><iframe src="https://www.tiktok.com/player/v1/' + encodeURIComponent(id) + '" title="' + escapeAttr(w.title) + '" loading="lazy" allow="autoplay; fullscreen; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>'
+        : '<div class="work-frame frame"><span class="frame-tag">9:16</span></div>';
       el.innerHTML = frame +
         '<h3 class="work-title">' + escapeHtml(w.title) + '</h3>' +
         '<p class="work-note">' + escapeHtml(w.note) + '</p>';
       wg.appendChild(el);
     });
-  })();
-
-  // — Плеер: текущий день как «сейчас играет» —
-  (function () {
-    var today = SITE.schedule[todayIdx];
-    if (today.off) {
-      $("p-label").textContent = "сегодня выходной";
-      $("p-title").textContent = "Ближайший стрим — завтра";
-      $("p-start").textContent = "—";
-      $("p-end").textContent = "—";
+  }
+  function renderPlayer(L){
+    var today = L.schedule[todayIdx];
+    if (today.off){
+      $("p-label").textContent = L.ui.playerOffLabel;
+      $("p-title").textContent = L.ui.playerOffTitle;
+      $("p-start").textContent = "—"; $("p-end").textContent = "—";
     } else {
+      $("p-label").textContent = L.ui.playerNow;
       $("p-title").textContent = today.game;
       var m = today.time.match(/(\d{1,2}:\d{2}).*?(\d{1,2}:\d{2})/);
-      if (m) { $("p-start").textContent = m[1]; $("p-end").textContent = m[2]; }
+      $("p-start").textContent = m ? m[1] : "";
+      $("p-end").textContent   = m ? m[2] : "";
     }
-    // Кнопка ведёт в Twitch, если ссылка задана
-    var tw = SITE.links.twitch;
-    $("p-btn").addEventListener("click", function () {
-      if (tw && tw !== "#") window.open(tw, "_blank", "noopener");
-    });
-  })();
-})();
-
-
-/* ===================================================================
-   ПОЯВЛЕНИЕ СЕКЦИЙ ПРИ СКРОЛЛЕ (IntersectionObserver + reduced-motion)
-   =================================================================== */
-(function () {
-  var reduce = window.matchMedia &&
-               window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var els = document.querySelectorAll(".reveal");
-
-  if (reduce || !("IntersectionObserver" in window)) {
-    els.forEach(function (el) { el.classList.add("in-view"); });
-    return;
   }
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) { e.target.classList.add("in-view"); io.unobserve(e.target); }
-    });
-  }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
-  els.forEach(function (el) { io.observe(el); });
-})();
 
-
-/* ===================================================================
-   ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК (Твич / Монтаж)
-   =================================================================== */
-(function () {
-  var reduce = window.matchMedia &&
-               window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var tabs = {
-    twitch:  { btn: document.getElementById("tab-twitch"),  panel: document.getElementById("panel-twitch")  },
-    montage: { btn: document.getElementById("tab-montage"), panel: document.getElementById("panel-montage") }
-  };
-
-  // Секции для якорной навигации каждой вкладки
-  var SECTIONS = {
-    twitch: [
-      { id:"about",    label:"Обо мне" },
-      { id:"schedule", label:"Расписание" },
-      { id:"clips",    label:"Клипы" },
-      { id:"games",    label:"Игры" },
-      { id:"faq",      label:"FAQ" },
-      { id:"contacts", label:"Контакты" }
-    ],
-    montage: [
-      { id:"m-about",   label:"Обо мне" },
-      { id:"m-pricing", label:"Стоимость" },
-      { id:"m-works",   label:"Работы" }
-    ]
-  };
-  var subnav = document.getElementById("subnav");
-
-  function buildSubnav(name) {
-    subnav.innerHTML = "";
-    (SECTIONS[name] || []).forEach(function (s) {
+  // ——— SUBNAV (зависит от языка + активной вкладки) ———
+  function sectionsFor(name, L){
+    var u = L.ui;
+    return name === "montage"
+      ? [ {id:"m-about",label:u.secMAbout}, {id:"m-pricing",label:u.secPricing}, {id:"m-works",label:u.secWorks} ]
+      : [ {id:"about",label:u.secAbout}, {id:"schedule",label:u.secSchedule}, {id:"clips",label:u.secClips},
+          {id:"games",label:u.secGames}, {id:"faq",label:u.secFaq}, {id:"contacts",label:u.secContacts} ];
+  }
+  function buildSubnav(){
+    var subnav = $("subnav"); subnav.innerHTML = "";
+    sectionsFor(activeTab, T[lang]).forEach(function(s){
       var a = document.createElement("a");
-      a.href = "#" + s.id;
-      a.textContent = s.label;
+      a.href = "#" + s.id; a.textContent = s.label;
       subnav.appendChild(a);
     });
   }
 
-  function activate(name, doScroll) {
-    if (!tabs[name]) name = "twitch";
-    Object.keys(tabs).forEach(function (k) {
-      var on = k === name;
-      tabs[k].btn.setAttribute("aria-selected", on ? "true" : "false");
-      tabs[k].panel.hidden = !on;
-    });
-    buildSubnav(name);
-    // плеер — только на вкладке «Твич»
-    document.body.classList.toggle("no-player", name === "montage");
-    try { history.replaceState(null, "", name === "montage" ? "#montage" : "#"); } catch (e) {}
-    if (doScroll) window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  // ——— ПРИМЕНИТЬ ЯЗЫК ———
+  function applyLang(next){
+    if (T[next]) lang = next;
+    var L = T[lang], u = L.ui;
+
+    document.documentElement.lang = L.htmlLang;
+    document.title = L.docTitle;
+    var md = document.querySelector('meta[name="description"]'); if (md) md.setAttribute("content", L.metaDesc);
+
+    // шапка / бренд / край / футер / вкладки
+    $("brand").innerHTML = escapeHtml(SITE.nick) + '<span class="dot">.</span>';
+    $("footer-nick").textContent = SITE.nick;
+    $("year").textContent = new Date().getFullYear();
+    $("edge-l").textContent = SITE.nick + " — live";
+    $("tab-twitch").textContent = u.tabTwitch;
+    $("tab-montage").textContent = u.tabMontage;
+    $("lang-ru").setAttribute("aria-pressed", lang==="ru" ? "true":"false");
+    $("lang-en").setAttribute("aria-pressed", lang==="en" ? "true":"false");
+
+    // ник в hero (вторая половина курсивом)
+    var n = SITE.nick, cut = Math.ceil(n.length/2);
+    $("hero-name").innerHTML = escapeHtml(n.slice(0,cut)) + '<em>' + escapeHtml(n.slice(cut)) + '</em>';
+
+    // hero (твич)
+    var eb = document.querySelector("#hero .eyebrow");
+    if (eb) eb.innerHTML = '<span>'+escapeHtml(u.heroVol)+'</span> <span class="live">'+escapeHtml(u.heroOnair)+'</span>';
+    setText("#hero .hero-kicker", u.heroKicker);
+    $("about-lead").textContent = L.aboutLead;
+    $("about-body").textContent = L.about;
+
+    // заголовки секций твича
+    setText("#about .sec-title", u.secAbout);        setText("#about .sec-note", u.noteProfile);
+    setText("#schedule .sec-title", u.secSchedule);  setText("#schedule .sec-note", u.noteMsk);
+    setText("#clips .sec-title", u.secClips);        setText("#clips .sec-note", u.noteHighlights);
+    setText("#games .sec-title", u.secGames);        setText("#games .sec-note", u.noteRotation);
+    setText("#faq .sec-title", u.secFaq);            setText("#faq .sec-note", u.noteQuestions);
+    setText("#contacts .sec-title", u.secContacts);  setText("#contacts .sec-note", u.noteConnect);
+
+    // монтаж hero + секции
+    setText(".m-hero .m-eyebrow", u.mEyebrow);
+    var mt = document.querySelector(".m-title");
+    if (mt) mt.innerHTML = escapeHtml(u.mTitle) + '<span class="dot">.</span>';
+    $("m-tag").textContent = L.montage.tagline;
+    $("m-about-lead").textContent = L.montage.aboutLead;
+    $("m-about-body").textContent = L.montage.about;
+    $("works-note").textContent = L.montage.worksNote;
+    $("m-telegram").innerHTML = escapeHtml(u.mOrder) + ARROW;
+    setText("#m-about .sec-title", u.secMAbout);      setText("#m-about .sec-note", u.noteEditor);
+    setText("#m-pricing .sec-title", u.secPricing);   setText("#m-pricing .sec-note", u.notePricing);
+    setText("#m-works .sec-title", u.secWorks);       setText("#m-works .sec-note", u.notePortfolio);
+    setText(".works-cta .lead", u.worksCtaLead);
+    $("m-cta-tiktok").innerHTML = escapeHtml(u.worksCtaWatch) + ARROW;
+    $("m-cta-telegram").innerHTML = escapeHtml(u.worksCtaMsg) + ARROW;
+
+    // списки
+    renderSchedule(L); renderClips(L); renderGames(L); renderFaq(L);
+    renderContacts(L); renderPricing(L); renderWorks(L); renderPlayer(L);
+
+    buildSubnav();
+    try { localStorage.setItem("kilavra-lang", lang); } catch(e){}
   }
 
-  tabs.twitch.btn.addEventListener("click",  function () { activate("twitch", true); });
-  tabs.montage.btn.addEventListener("click", function () { activate("montage", true); });
+  // ссылки (не зависят от языка) — один раз
+  ["twitch","tiktok","telegram"].forEach(function(k){
+    bindLink($("cta-"+k), SITE.links[k]);
+    bindLink($("foot-"+k), SITE.links[k]);
+  });
+  bindLink($("m-tiktok"), SITE.links.tiktok);
+  bindLink($("m-telegram"), SITE.links.telegram);
+  bindLink($("m-cta-tiktok"), SITE.links.tiktok);
+  bindLink($("m-cta-telegram"), SITE.links.telegram);
+  $("p-btn").addEventListener("click", function(){
+    var tw = SITE.links.twitch; if (tw && tw!=="#") window.open(tw,"_blank","noopener");
+  });
 
-  // стрелки влево/вправо между вкладками
-  [tabs.twitch.btn, tabs.montage.btn].forEach(function (b) {
-    b.addEventListener("keydown", function (e) {
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+  // ——— ВКЛАДКИ ———
+  var tabs = {
+    twitch:  { btn:$("tab-twitch"),  panel:$("panel-twitch") },
+    montage: { btn:$("tab-montage"), panel:$("panel-montage") }
+  };
+  function activate(name, doScroll){
+    if (!tabs[name]) name = "twitch";
+    activeTab = name;
+    Object.keys(tabs).forEach(function(k){
+      var on = k===name;
+      tabs[k].btn.setAttribute("aria-selected", on ? "true":"false");
+      tabs[k].panel.hidden = !on;
+    });
+    buildSubnav();
+    document.body.classList.toggle("no-player", name==="montage");
+    try { history.replaceState(null,"", name==="montage" ? "#montage":"#"); } catch(e){}
+    if (doScroll) window.scrollTo({ top:0, behavior: reduce ? "auto":"smooth" });
+  }
+  tabs.twitch.btn.addEventListener("click", function(){ activate("twitch", true); });
+  tabs.montage.btn.addEventListener("click", function(){ activate("montage", true); });
+  [tabs.twitch.btn, tabs.montage.btn].forEach(function(b){
+    b.addEventListener("keydown", function(e){
+      if (e.key==="ArrowRight" || e.key==="ArrowLeft"){
         e.preventDefault();
-        var next = e.key === "ArrowRight" ? "montage" : "twitch";
-        activate(next, false);
-        tabs[next].btn.focus();
+        var nx = e.key==="ArrowRight" ? "montage":"twitch";
+        activate(nx, false); tabs[nx].btn.focus();
       }
     });
   });
 
-  // старт: монтаж, если hash = #montage или указывает на секцию монтажа (#m-…)
+  // ——— ЯЗЫК: кнопки ———
+  $("lang-ru").addEventListener("click", function(){ applyLang("ru"); });
+  $("lang-en").addEventListener("click", function(){ applyLang("en"); });
+
+  // ——— СТАРТ ———
+  applyLang(lang);
   var h = location.hash;
-  var startMontage = h === "#montage" || /^#m-/.test(h);
-  activate(startMontage ? "montage" : "twitch", false);
+  activate((h==="#montage" || /^#m-/.test(h)) ? "montage" : "twitch", false);
+
+  // ——— ПОЯВЛЕНИЕ ПРИ СКРОЛЛЕ ———
+  var els = document.querySelectorAll(".reveal");
+  if (reduce || !("IntersectionObserver" in window)) {
+    els.forEach(function(el){ el.classList.add("in-view"); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add("in-view"); io.unobserve(e.target); } });
+    }, { threshold:0.12, rootMargin:"0px 0px -8% 0px" });
+    els.forEach(function(el){ io.observe(el); });
+  }
 })();
 </script>
 
