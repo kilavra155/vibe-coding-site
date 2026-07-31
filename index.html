@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>KILAVRA — стример</title>
 <meta name="description" content="Официальная страница стримера KILAVRA: расписание, клипы, игры, монтаж и контакты.">
+<!-- Иконка вкладки (favicon): фирменная «K» с красной точкой, встроена как SVG -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='13'%20fill='%2316150f'/%3E%3Ctext%20x='29'%20y='46'%20text-anchor='middle'%20font-family='Georgia,serif'%20font-size='44'%20font-weight='700'%20fill='%23f3f1ea'%3EK%3C/text%3E%3Ccircle%20cx='47'%20cy='45'%20r='5.5'%20fill='%23e02718'/%3E%3C/svg%3E">
 
 <!-- Google Fonts: единственное внешнее подключение.
      Playfair Display (fashion-serif, дисплей) + Archivo (гротеск) + Inter (текст). Все с кириллицей. -->
@@ -218,11 +220,10 @@ section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:104px; }
 }
 .hero-name{
   font-family:var(--ff-serif); font-weight:800;
-  font-size:clamp(3rem, 15vw, 8.5rem);
-  line-height:.9; letter-spacing:-.01em; margin:0;
-  overflow-wrap:anywhere;
+  font-size:clamp(2rem, 12vw, 5.25rem);
+  line-height:1; letter-spacing:-.01em; margin:0 0 30px;
+  white-space:nowrap;   /* ник всегда в одну строку, не делится */
 }
-.hero-name em{ font-style:italic; font-weight:700; }
 .hero-kicker{
   font-family:var(--ff-grot); font-weight:800;
   font-size:clamp(.9rem, 2.6vw, 1.15rem);
@@ -839,9 +840,7 @@ const T = {
     <div class="wrap">
       <div class="hero-grid">
         <div>
-          <p class="eyebrow reveal">( vol. 01 ) &nbsp;—&nbsp; <span class="live">в эфире по расписанию</span></p>
           <h1 class="hero-name reveal" id="hero-name">KILAVRA</h1>
-          <p class="hero-kicker reveal">Live-стример</p>
           <div class="hero-links reveal">
             <a class="hero-link" id="cta-twitch"   href="#" target="_blank" rel="noopener">Twitch <span class="arr" aria-hidden="true">↗</span></a>
             <a class="hero-link" id="cta-tiktok"   href="#" target="_blank" rel="noopener">TikTok <span class="arr" aria-hidden="true">↗</span></a>
@@ -1203,14 +1202,9 @@ const T = {
     $("lang-ru").setAttribute("aria-pressed", lang==="ru" ? "true":"false");
     $("lang-en").setAttribute("aria-pressed", lang==="en" ? "true":"false");
 
-    // ник в hero (вторая половина курсивом)
-    var n = SITE.nick, cut = Math.ceil(n.length/2);
-    $("hero-name").innerHTML = escapeHtml(n.slice(0,cut)) + '<em>' + escapeHtml(n.slice(cut)) + '</em>';
+    // ник в hero — целиком, одной строкой (без деления)
+    $("hero-name").textContent = SITE.nick;
 
-    // hero (твич)
-    var eb = document.querySelector("#hero .eyebrow");
-    if (eb) eb.innerHTML = '<span>'+escapeHtml(u.heroVol)+'</span> <span class="live">'+escapeHtml(u.heroOnair)+'</span>';
-    setText("#hero .hero-kicker", u.heroKicker);
     $("about-lead").textContent = L.aboutLead;
     $("about-body").textContent = L.about;
 
