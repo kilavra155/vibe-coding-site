@@ -599,10 +599,71 @@ body.no-player .player{ display:none; }
   }
   .reveal{ opacity:1; transform:none; }
 }
+
+/* ===================================================================
+   ЗАСТАВКА / ПРЕЛОАДЕР
+   =================================================================== */
+html.splash-lock{ overflow:hidden; }        /* блокировка скролла на время заставки */
+#preloader{
+  position:fixed; inset:0; z-index:9999;
+  background:#000;
+  display:flex; align-items:center; justify-content:center;
+  opacity:1; transition:opacity .5s ease;
+}
+#preloader.hide{ opacity:0; }                /* fade out всего слоя за 500мс */
+#preloader .pre-logo{
+  font-family:var(--ff-grot); font-weight:900;
+  letter-spacing:.14em; text-transform:uppercase;
+  font-size:clamp(1.7rem, 7vw, 2.6rem); color:#fff;
+  opacity:0; will-change:opacity, transform;
+  animation:preRise .6s ease-out forwards;    /* буквы: opacity 0→1 + подъём 15px */
+}
+#preloader .pre-logo .dot{
+  color:var(--accent);
+  opacity:0;
+  animation:preDot .3s ease-out .4s forwards; /* точка: отдельно, задержка ~400мс */
+}
+@keyframes preRise{ from{ opacity:0; transform:translateY(15px); } to{ opacity:1; transform:none; } }
+@keyframes preDot{  from{ opacity:0; } to{ opacity:1; } }
 </style>
 </head>
 
 <body>
+
+<!-- ===================================================================
+     ЗАСТАВКА ПРИ ЗАГРУЗКЕ (прелоадер)
+     =================================================================== -->
+<div id="preloader" role="status" aria-label="Загрузка">
+  <div class="pre-logo">KILAVRA<span class="dot">.</span></div>
+</div>
+<script>
+(function(){
+  var pre = document.getElementById('preloader');
+  if(!pre) return;
+  function done(){
+    if(!pre) return;
+    if(pre.parentNode) pre.parentNode.removeChild(pre);   // убрать из DOM
+    document.documentElement.classList.remove('splash-lock');  // разблокировать скролл
+    pre = null;
+  }
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var seen = false; try { seen = !!sessionStorage.getItem('kilavra-splash'); } catch(e){}
+
+  // reduced-motion или уже показывали в этой сессии — не показываем вообще
+  if (reduce || seen){ done(); return; }
+  try { sessionStorage.setItem('kilavra-splash','1'); } catch(e){}
+
+  document.documentElement.classList.add('splash-lock');  // блокируем скролл
+
+  // Таймлайн: буквы 0–600мс, точка ~400–700мс, держим кадр до 1200мс,
+  // затем fade out 500мс → удаляем на 1700мс (всё ≤ 1.8с).
+  setTimeout(function(){ if (pre) pre.classList.add('hide'); }, 1200);
+  setTimeout(done, 1700);
+
+  // Страховка: убрать принудительно через 3с при любом сбое.
+  setTimeout(done, 3000);
+})();
+</script>
 
 <!-- ===================================================================
      🔧 РЕДАКТИРУЙ ЗДЕСЬ — весь контент в одном объекте.
