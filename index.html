@@ -46,7 +46,6 @@ body{
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
-  padding-bottom:var(--player-h);   /* место под липкий плеер */
 }
 
 img{ max-width:100%; display:block; }
@@ -277,7 +276,7 @@ section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:104px; }
 .tracklist{ border-top:1px solid var(--line); }
 .track{
   display:grid;
-  grid-template-columns:34px 1fr auto;
+  grid-template-columns:34px 1fr;
   gap:14px; align-items:center;
   padding:16px 4px;
   border-bottom:1px solid var(--line);
@@ -666,13 +665,13 @@ const T = {
     },
     about: "Даров! Стримлю на Твиче игры и IRL, будем смотреть фильмы и проводить время с кайфом.",
     schedule: [
-      { dow:"Понедельник", game:"Valorant — ранкед",        time:"19:00 – 23:00" },
-      { dow:"Вторник",     game:"Apex Legends",             time:"19:00 – 23:00" },
-      { dow:"Среда",       game:"Разбор + общение с чатом",  time:"20:00 – 23:00" },
-      { dow:"Четверг",     game:"Counter-Strike 2",         time:"19:00 – 23:00" },
-      { dow:"Пятница",     game:"Games night / рулетка игр", time:"20:00 – 01:00" },
-      { dow:"Суббота",     game:"Retro-хардкор марафон",     time:"16:00 – 22:00" },
-      { dow:"Воскресенье", game:"Выходной — отдыхаем",       time:"—", off:true }
+      { dow:"Понедельник" },
+      { dow:"Вторник",     game:"Выходной — отдыхаем", off:true },
+      { dow:"Среда" },
+      { dow:"Четверг",     game:"Выходной — отдыхаем", off:true },
+      { dow:"Пятница" },
+      { dow:"Суббота",     game:"Выходной — отдыхаем", off:true },
+      { dow:"Воскресенье", game:"Выходной — отдыхаем", off:true }
     ],
     clips: [
       { title:"1v5 клатч на Ascent",      note:"Valorant • момент недели" },
@@ -747,13 +746,13 @@ const T = {
     },
     about: "Yo! I stream games and IRL on Twitch — we'll watch movies and just hang out and have a good time.",
     schedule: [
-      { dow:"Monday",    game:"Valorant — ranked",           time:"19:00 – 23:00" },
-      { dow:"Tuesday",   game:"Apex Legends",                time:"19:00 – 23:00" },
-      { dow:"Wednesday", game:"Reviews + chatting",          time:"20:00 – 23:00" },
-      { dow:"Thursday",  game:"Counter-Strike 2",            time:"19:00 – 23:00" },
-      { dow:"Friday",    game:"Games night / game roulette", time:"20:00 – 01:00" },
-      { dow:"Saturday",  game:"Retro hardcore marathon",     time:"16:00 – 22:00" },
-      { dow:"Sunday",    game:"Day off — resting",           time:"—", off:true }
+      { dow:"Monday" },
+      { dow:"Tuesday",   game:"Day off — resting", off:true },
+      { dow:"Wednesday" },
+      { dow:"Thursday",  game:"Day off — resting", off:true },
+      { dow:"Friday" },
+      { dow:"Saturday",  game:"Day off — resting", off:true },
+      { dow:"Sunday",    game:"Day off — resting", off:true }
     ],
     clips: [
       { title:"1v5 clutch on Ascent",        note:"Valorant • play of the week" },
@@ -877,7 +876,6 @@ const T = {
       <div class="sec-head reveal">
         <span class="sec-index">02</span>
         <h2 class="sec-title">Расписание</h2>
-        <span class="sec-note">по МСК</span>
       </div>
       <div class="tracklist reveal" id="tracklist"></div>
     </div>
@@ -1011,23 +1009,6 @@ const T = {
   </div>
 </footer>
 
-<!-- ЛИПКИЙ ПЛЕЕР -->
-<div class="player" aria-label="Сейчас по расписанию">
-  <div class="wrap player-inner">
-    <button class="p-btn" id="p-btn" type="button" aria-label="Открыть Twitch">▶</button>
-    <div class="p-meta">
-      <div class="p-label" id="p-label">сейчас по расписанию</div>
-      <div class="p-title" id="p-title">—</div>
-    </div>
-    <div class="p-track">
-      <span class="p-time" id="p-start">0:00</span>
-      <div class="p-bar" aria-hidden="true"><span class="p-fill"></span></div>
-      <span class="p-time" id="p-end">0:00</span>
-    </div>
-  </div>
-</div>
-
-
 <script>
 (function () {
   var $ = function (id){ return document.getElementById(id); };
@@ -1058,7 +1039,7 @@ const T = {
   function renderSchedule(L){
     var box = $("tracklist"); box.innerHTML = "";
     L.schedule.forEach(function(d,i){
-      var isToday = i === todayIdx;
+      var isToday = i === todayIdx && !d.off;   // выходные не подсвечиваем и не помечаем «в эфире»
       var row = document.createElement("div");
       row.className = "track" + (d.off ? " is-off":"") + (isToday ? " is-today":"");
       if (isToday) row.setAttribute("aria-current","date");
@@ -1067,9 +1048,8 @@ const T = {
         '<div class="t-main">' +
           '<div class="t-day">' + escapeHtml(d.dow) +
             (isToday ? '<span class="t-live">' + escapeHtml(L.ui.liveTag) + '</span>' : '') + '</div>' +
-          '<div class="t-game">' + escapeHtml(d.game) + '</div>' +
-        '</div>' +
-        '<span class="t-time">' + escapeHtml(d.time) + '</span>';
+          (d.game ? '<div class="t-game">' + escapeHtml(d.game) + '</div>' : '') +
+        '</div>';
       box.appendChild(row);
     });
   }
@@ -1151,21 +1131,6 @@ const T = {
       wg.appendChild(el);
     });
   }
-  function renderPlayer(L){
-    var today = L.schedule[todayIdx];
-    if (today.off){
-      $("p-label").textContent = L.ui.playerOffLabel;
-      $("p-title").textContent = L.ui.playerOffTitle;
-      $("p-start").textContent = "—"; $("p-end").textContent = "—";
-    } else {
-      $("p-label").textContent = L.ui.playerNow;
-      $("p-title").textContent = today.game;
-      var m = today.time.match(/(\d{1,2}:\d{2}).*?(\d{1,2}:\d{2})/);
-      $("p-start").textContent = m ? m[1] : "";
-      $("p-end").textContent   = m ? m[2] : "";
-    }
-  }
-
   // ——— SUBNAV (зависит от языка + активной вкладки) ———
   function sectionsFor(name, L){
     var u = L.ui;
@@ -1209,7 +1174,7 @@ const T = {
 
     // заголовки секций твича
     setText("#about .sec-title", u.secAbout);        setText("#about .sec-note", u.noteProfile);
-    setText("#schedule .sec-title", u.secSchedule);  setText("#schedule .sec-note", u.noteMsk);
+    setText("#schedule .sec-title", u.secSchedule);
     setText("#clips .sec-title", u.secClips);        setText("#clips .sec-note", u.noteHighlights);
     setText("#games .sec-title", u.secGames);        setText("#games .sec-note", u.noteRotation);
     setText("#faq .sec-title", u.secFaq);            setText("#faq .sec-note", u.noteQuestions);
@@ -1233,7 +1198,7 @@ const T = {
 
     // списки
     renderSchedule(L); renderClips(L); renderGames(L); renderFaq(L);
-    renderContacts(L); renderPricing(L); renderWorks(L); renderPlayer(L);
+    renderContacts(L); renderPricing(L); renderWorks(L);
 
     buildSubnav();
     try { localStorage.setItem("kilavra-lang", lang); } catch(e){}
@@ -1248,9 +1213,6 @@ const T = {
   bindLink($("m-telegram"), SITE.links.telegram);
   bindLink($("m-cta-tiktok"), SITE.links.tiktok);
   bindLink($("m-cta-telegram"), SITE.links.telegram);
-  $("p-btn").addEventListener("click", function(){
-    var tw = SITE.links.twitch; if (tw && tw!=="#") window.open(tw,"_blank","noopener");
-  });
 
   // ——— ВКЛАДКИ ———
   var tabs = {
