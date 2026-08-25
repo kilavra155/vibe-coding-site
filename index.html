@@ -263,6 +263,13 @@ section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:104px; }
   font-size:clamp(1.4rem, 3.4vw, 2rem); line-height:1.25; margin:0;
 }
 .about-body{ color:var(--ink-2); font-size:1.05rem; margin:0; }
+/* «Обо мне» (Твич): цитата убрана — одна колонка, текст занимает место естественно */
+#about .about-grid{ display:block; }
+#about .about-body{
+  color:var(--ink); max-width:34ch; margin:0;
+  font-family:var(--ff-serif); font-size:clamp(1.5rem, 3.6vw, 2.1rem);
+  line-height:1.3;
+}
 
 /* ===================================================================
    РАСПИСАНИЕ — «трек-лист»
@@ -657,10 +664,7 @@ const T = {
       worksCtaLead:"Хочешь так же?", worksCtaWatch:"Смотреть в TikTok", worksCtaMsg:"Написать в Telegram",
       priceBadge:"хит", emailLabel:"Почта"
     },
-    aboutLead: "Ранкед без нервов, разбор ошибок вслух и чат, где не токсично.",
-    about: "Привет! Я KILAVRA — стримлю шутеры и соревновательные игры уже пятый год. " +
-           "Люблю сложные катки, retro-хардкор по выходным и разговоры с аудиторией между раундами. " +
-           "Цель простая: провести с вами вечер так, чтобы захотелось вернуться завтра.",
+    about: "Даров! Стримлю на Твиче игры и IRL, будем смотреть фильмы и проводить время с кайфом.",
     schedule: [
       { dow:"Понедельник", game:"Valorant — ранкед",        time:"19:00 – 23:00" },
       { dow:"Вторник",     game:"Apex Legends",             time:"19:00 – 23:00" },
@@ -741,10 +745,7 @@ const T = {
       worksCtaLead:"Want the same?", worksCtaWatch:"Watch on TikTok", worksCtaMsg:"Message on Telegram",
       priceBadge:"top", emailLabel:"Email"
     },
-    aboutLead: "Ranked without the tilt, mistakes reviewed out loud, and a chat that isn't toxic.",
-    about: "Hi! I'm KILAVRA — I've been streaming shooters and competitive games for five years now. " +
-           "I love tough matches, retro hardcore on weekends, and chatting with the audience between rounds. " +
-           "The goal is simple: to spend the evening with you so you'll want to come back tomorrow.",
+    about: "Yo! I stream games and IRL on Twitch — we'll watch movies and just hang out and have a good time.",
     schedule: [
       { dow:"Monday",    game:"Valorant — ranked",           time:"19:00 – 23:00" },
       { dow:"Tuesday",   game:"Apex Legends",                time:"19:00 – 23:00" },
@@ -865,7 +866,6 @@ const T = {
         <span class="sec-note">profile</span>
       </div>
       <div class="about-grid reveal">
-        <p class="about-lead" id="about-lead"></p>
         <p class="about-body" id="about-body"></p>
       </div>
     </div>
@@ -1205,7 +1205,6 @@ const T = {
     // ник в hero — целиком, одной строкой (без деления)
     $("hero-name").textContent = SITE.nick;
 
-    $("about-lead").textContent = L.aboutLead;
     $("about-body").textContent = L.about;
 
     // заголовки секций твича
