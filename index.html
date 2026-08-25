@@ -312,37 +312,6 @@ section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:104px; }
 }
 
 /* ===================================================================
-   КЛИПЫ
-   =================================================================== */
-.clips-grid{
-  display:grid; gap:20px;
-  grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
-}
-.clip{ }
-.clip .clip-frame{
-  aspect-ratio:16/9; margin:0 0 12px;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer;
-}
-.clip .play{
-  position:relative; z-index:2;
-  width:54px; height:54px; border-radius:50%;
-  background:var(--ink); color:var(--bg);
-  display:flex; align-items:center; justify-content:center;
-  font-size:1rem; padding-left:3px;
-  transition:transform .2s, background .2s;
-}
-.clip:hover .play{ transform:scale(1.08); background:var(--accent); color:#fff; }
-.clip .clip-title{
-  font-family:var(--ff-grot); font-weight:700; font-size:1rem;
-  margin:0 0 3px;
-}
-.clip .clip-note{
-  font-family:var(--ff-grot); font-size:.72rem; font-weight:600;
-  letter-spacing:.08em; text-transform:uppercase; color:var(--ink-2); margin:0;
-}
-
-/* ===================================================================
    ИГРЫ — нумерованный editorial-список
    =================================================================== */
 .games{ border-top:1px solid var(--line); }
@@ -644,7 +613,7 @@ const T = {
   ru: {
     htmlLang: "ru",
     docTitle: "KILAVRA — стример",
-    metaDesc: "Официальная страница стримера KILAVRA: расписание, клипы, игры, монтаж и контакты.",
+    metaDesc: "Официальная страница стримера KILAVRA: расписание, игры, монтаж и контакты.",
     ui: {
       tabTwitch:"Твич", tabMontage:"Монтаж",
       heroVol:"( vol. 01 ) —", heroOnair:"в эфире по расписанию", heroKicker:"Live-стример",
@@ -672,12 +641,6 @@ const T = {
       { dow:"Пятница" },
       { dow:"Суббота",     game:"Выходной — отдыхаем", off:true },
       { dow:"Воскресенье", game:"Выходной — отдыхаем", off:true }
-    ],
-    clips: [
-      { title:"1v5 клатч на Ascent",      note:"Valorant • момент недели" },
-      { title:"Финальный круг, 2 команды", note:"Apex Legends • чемпион" },
-      { title:"Эйс с дигла на A-long",     note:"Counter-Strike 2 • хайлайт" },
-      { title:"Босс с первой попытки",     note:"Retro-марафон • no-hit" }
     ],
     games: [
       { name:"Valorant",         tag:"Основной ранкед" },
@@ -725,7 +688,7 @@ const T = {
   en: {
     htmlLang: "en",
     docTitle: "KILAVRA — streamer",
-    metaDesc: "Official page of streamer & editor KILAVRA: schedule, clips, games, editing and contacts.",
+    metaDesc: "Official page of streamer & editor KILAVRA: schedule, games, editing and contacts.",
     ui: {
       tabTwitch:"Twitch", tabMontage:"Editing",
       heroVol:"( vol. 01 ) —", heroOnair:"live on schedule", heroKicker:"Live streamer",
@@ -753,12 +716,6 @@ const T = {
       { dow:"Friday" },
       { dow:"Saturday",  game:"Day off — resting", off:true },
       { dow:"Sunday",    game:"Day off — resting", off:true }
-    ],
-    clips: [
-      { title:"1v5 clutch on Ascent",        note:"Valorant • play of the week" },
-      { title:"Final circle, 2 squads",      note:"Apex Legends • champion" },
-      { title:"Ace with the Deagle, A-long", note:"Counter-Strike 2 • highlight" },
-      { title:"Boss on the first try",       note:"Retro marathon • no-hit" }
     ],
     games: [
       { name:"Valorant",         tag:"Main ranked" },
@@ -881,23 +838,11 @@ const T = {
     </div>
   </section>
 
-  <!-- 4. КЛИПЫ -->
-  <section id="clips">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <span class="sec-index">03</span>
-        <h2 class="sec-title">Клипы</h2>
-        <span class="sec-note">highlights</span>
-      </div>
-      <div class="clips-grid reveal" id="clips-grid"></div>
-    </div>
-  </section>
-
-  <!-- 5. ЛЮБИМЫЕ ИГРЫ -->
+  <!-- 3. ЛЮБИМЫЕ ИГРЫ -->
   <section id="games">
     <div class="wrap">
       <div class="sec-head reveal">
-        <span class="sec-index">04</span>
+        <span class="sec-index">03</span>
         <h2 class="sec-title">Любимые игры</h2>
         <span class="sec-note">rotation</span>
       </div>
@@ -905,11 +850,11 @@ const T = {
     </div>
   </section>
 
-  <!-- 6. FAQ -->
+  <!-- 4. FAQ -->
   <section id="faq">
     <div class="wrap">
       <div class="sec-head reveal">
-        <span class="sec-index">05</span>
+        <span class="sec-index">04</span>
         <h2 class="sec-title">FAQ</h2>
         <span class="sec-note">вопросы</span>
       </div>
@@ -917,11 +862,11 @@ const T = {
     </div>
   </section>
 
-  <!-- 7. КОНТАКТЫ -->
+  <!-- 5. КОНТАКТЫ -->
   <section id="contacts">
     <div class="wrap">
       <div class="sec-head reveal">
-        <span class="sec-index">06</span>
+        <span class="sec-index">05</span>
         <h2 class="sec-title">Контакты</h2>
         <span class="sec-note">connect</span>
       </div>
@@ -1053,17 +998,6 @@ const T = {
       box.appendChild(row);
     });
   }
-  function renderClips(L){
-    var grid = $("clips-grid"); grid.innerHTML = "";
-    L.clips.forEach(function(c){
-      var el = document.createElement("article"); el.className="clip";
-      el.innerHTML =
-        '<div class="clip-frame frame"><span class="frame-tag">clip 16:9</span><span class="play" aria-hidden="true">▶</span></div>' +
-        '<h3 class="clip-title">' + escapeHtml(c.title) + '</h3>' +
-        '<p class="clip-note">' + escapeHtml(c.note) + '</p>';
-      grid.appendChild(el);
-    });
-  }
   function renderGames(L){
     var box = $("games-list"); box.innerHTML = "";
     L.games.forEach(function(g,i){
@@ -1136,7 +1070,7 @@ const T = {
     var u = L.ui;
     return name === "montage"
       ? [ {id:"m-about",label:u.secMAbout}, {id:"m-pricing",label:u.secPricing}, {id:"m-works",label:u.secWorks} ]
-      : [ {id:"about",label:u.secAbout}, {id:"schedule",label:u.secSchedule}, {id:"clips",label:u.secClips},
+      : [ {id:"about",label:u.secAbout}, {id:"schedule",label:u.secSchedule},
           {id:"games",label:u.secGames}, {id:"faq",label:u.secFaq}, {id:"contacts",label:u.secContacts} ];
   }
   function buildSubnav(){
@@ -1175,7 +1109,6 @@ const T = {
     // заголовки секций твича
     setText("#about .sec-title", u.secAbout);        setText("#about .sec-note", u.noteProfile);
     setText("#schedule .sec-title", u.secSchedule);
-    setText("#clips .sec-title", u.secClips);        setText("#clips .sec-note", u.noteHighlights);
     setText("#games .sec-title", u.secGames);        setText("#games .sec-note", u.noteRotation);
     setText("#faq .sec-title", u.secFaq);            setText("#faq .sec-note", u.noteQuestions);
     setText("#contacts .sec-title", u.secContacts);  setText("#contacts .sec-note", u.noteConnect);
@@ -1197,7 +1130,7 @@ const T = {
     $("m-cta-telegram").innerHTML = escapeHtml(u.worksCtaMsg) + ARROW;
 
     // списки
-    renderSchedule(L); renderClips(L); renderGames(L); renderFaq(L);
+    renderSchedule(L); renderGames(L); renderFaq(L);
     renderContacts(L); renderPricing(L); renderWorks(L);
 
     buildSubnav();
