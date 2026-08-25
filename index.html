@@ -540,6 +540,19 @@ body.no-player .player{ display:none; }
 .price-feat{ list-style:none; margin:6px 0 0; padding:0; display:grid; gap:9px; }
 .price-feat li{ font-size:.92rem; padding-left:18px; position:relative; }
 .price-feat li::before{ content:"—"; position:absolute; left:0; color:var(--accent); }
+/* CTA под карточками цен */
+.price-cta{
+  margin:32px 0 0; text-align:center;
+  color:var(--ink-2);   /* приглушённый серый для текста */
+  font-family:var(--ff-grot); font-weight:600; letter-spacing:.02em; font-size:1rem;
+}
+.price-cta a{
+  color:var(--accent);                          /* красный акцент */
+  border-bottom:2px solid var(--accent);        /* подчёркивание, как у ссылок в hero */
+  padding-bottom:2px; font-weight:700;
+  transition:color .2s, border-color .2s;
+}
+.price-cta a:hover{ color:var(--ink); border-color:var(--ink); }   /* ховер как у остальных ссылок */
 
 /* ===================================================================
    МОИ РАБОТЫ (слоты 9:16)
@@ -636,7 +649,7 @@ const T = {
       secPricing:"Стоимость", notePricing:"прайс",
       secWorks:"Мои работы", notePortfolio:"портфолио",
       worksCtaLead:"Хочешь так же?", worksCtaWatch:"Смотреть в TikTok", worksCtaMsg:"Написать в Telegram",
-      priceBadge:"хит", emailLabel:"Почта"
+      priceBadge:"хит", emailLabel:"Почта", priceCta:"По заказу — пишите в"
     },
     about: "Даров! Стримлю на Твиче игры и IRL, будем смотреть фильмы и проводить время с кайфом.",
     schedule: [
@@ -658,9 +671,9 @@ const T = {
              "Быстрые правки, аккуратные сроки, исходники не теряю. Связь и заказ — через Telegram.",
       worksNote: "Мои работы — прямые встройки из TikTok. Нажми, чтобы посмотреть.",
       pricing: [
-        { title:"Эдит", price:"$25", note:"короткий динамичный эдит", featured:false,
+        { title:"Эдит", price:"$15", note:"короткий динамичный эдит", featured:false,
           features:["до 60 секунд", "эффекты + звук", "1–2 правки", "срок 1–2 дня"] },
-        { title:"Рилс / Shorts", price:"$45", note:"вертикальный ролик под соцсети", featured:true,
+        { title:"Рилс / Shorts", price:"$25", note:"вертикальный ролик под соцсети", featured:true,
           features:["до 90 секунд", "субтитры + саунд-дизайн", "динамичная нарезка", "до 3 правок"] },
         { title:"YouTube-ролик", price:"$100", note:"полный монтаж", featured:false,
           features:["от 5 минут", "сценарий нарезки", "цветокор + звук", "правки до финала"] }
@@ -693,7 +706,7 @@ const T = {
       secPricing:"Pricing", notePricing:"pricing",
       secWorks:"My work", notePortfolio:"portfolio",
       worksCtaLead:"Want the same?", worksCtaWatch:"Watch on TikTok", worksCtaMsg:"Message on Telegram",
-      priceBadge:"top", emailLabel:"Email"
+      priceBadge:"top", emailLabel:"Email", priceCta:"For orders — message on"
     },
     about: "Yo! I stream games and IRL on Twitch — we'll watch movies and just hang out and have a good time.",
     schedule: [
@@ -715,9 +728,9 @@ const T = {
              "Fast revisions, tidy deadlines, I don't lose source files. Contact and orders — via Telegram.",
       worksNote: "My work — direct TikTok embeds. Tap to watch.",
       pricing: [
-        { title:"Edit", price:"$25", note:"short dynamic edit", featured:false,
+        { title:"Edit", price:"$15", note:"short dynamic edit", featured:false,
           features:["up to 60 seconds", "effects + sound", "1–2 revisions", "1–2 day turnaround"] },
-        { title:"Reels / Shorts", price:"$45", note:"vertical video for social", featured:true,
+        { title:"Reels / Shorts", price:"$25", note:"vertical video for social", featured:true,
           features:["up to 90 seconds", "subtitles + sound design", "dynamic cut", "up to 3 revisions"] },
         { title:"YouTube video", price:"$100", note:"full edit", featured:false,
           features:["from 5 minutes", "cut scenario", "color + sound", "revisions until final"] }
@@ -887,6 +900,7 @@ const T = {
         <span class="sec-note">прайс</span>
       </div>
       <div class="pricing reveal" id="pricing-grid"></div>
+      <p class="price-cta reveal" id="price-cta"></p>
     </div>
   </section>
 
@@ -1112,6 +1126,13 @@ const T = {
     $("m-telegram").innerHTML = escapeHtml(u.mOrder) + ARROW;
     setText("#m-about .sec-title", u.secMAbout);      setText("#m-about .sec-note", u.noteEditor);
     setText("#m-pricing .sec-title", u.secPricing);   setText("#m-pricing .sec-note", u.notePricing);
+    (function(){
+      var tg = SITE.links.telegram;
+      var link = (tg && tg !== "#")
+        ? '<a href="' + escapeAttr(tg) + '" target="_blank" rel="noopener">Telegram</a>'
+        : 'Telegram';
+      $("price-cta").innerHTML = escapeHtml(u.priceCta) + ' ' + link;
+    })();
     setText("#m-works .sec-title", u.secWorks);       setText("#m-works .sec-note", u.notePortfolio);
     setText(".works-cta .lead", u.worksCtaLead);
     $("m-cta-tiktok").innerHTML = escapeHtml(u.worksCtaWatch) + ARROW;
