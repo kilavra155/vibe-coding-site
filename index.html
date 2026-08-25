@@ -315,8 +315,8 @@ section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:104px; }
    ИГРЫ — нумерованный editorial-список
    =================================================================== */
 .games{ border-top:1px solid var(--line); }
-.games.is-empty{ border-top:0; }   /* без разделительных линий в пустом состоянии */
-.games-empty{
+.games.is-empty, .faq.is-empty{ border-top:0; }   /* без разделительных линий в пустом состоянии */
+.games-empty, .faq-empty{
   margin:0; padding:56px 0; text-align:center;
   color:var(--ink-2);   /* тот же приглушённый серый, что у подписей справа */
   font-family:var(--ff-grot); font-weight:600; letter-spacing:.04em; font-size:1.05rem;
@@ -627,7 +627,7 @@ const T = {
       secSchedule:"Расписание", noteMsk:"по МСК",
       secClips:"Клипы", noteHighlights:"хайлайты",
       secGames:"Топ игры", noteRotation:"ротация", gamesEmpty:"Пока что игр нет",
-      secFaq:"FAQ", noteQuestions:"вопросы",
+      secFaq:"FAQ", noteQuestions:"вопросы", faqEmpty:"Вопросов пока нет",
       secContacts:"Контакты", noteConnect:"связь",
       liveTag:"в эфире",
       playerNow:"сейчас по расписанию", playerOffLabel:"сегодня выходной", playerOffTitle:"Ближайший стрим — завтра",
@@ -649,18 +649,7 @@ const T = {
       { dow:"Воскресенье", game:"Выходной — отдыхаем", off:true }
     ],
     games: [],
-    faq: [
-      { q:"На каком железе стримишь?",
-        a:"ПК: Ryzen 7, 32 ГБ RAM и видеокарта уровня RTX. Стрим идёт в 1080p60, звук пишу на конденсаторный микрофон." },
-      { q:"Можно ли играть вместе?",
-        a:"Да! По пятницам на Games night беру зрителей в лобби. Очередь формируется прямо во время стрима — следи за чатом." },
-      { q:"Как поддержать канал?",
-        a:"Самое ценное — быть в чате и делиться стримом с друзьями. Также доступны подписка, донаты и участие в целях стрима." },
-      { q:"Делаешь ли ты монтаж / шортсы?",
-        a:"Да! Монтирую вертикальные ролики и хайлайты — цены и работы смотри во вкладке «Монтаж» вверху страницы." },
-      { q:"Есть ли правила в чате?",
-        a:"Три простых: без токсичности, без спойлеров и без рекламы без спроса. Всё остальное — на расслабоне." }
-    ],
+    faq: [],
     montage: {
       tagline: "Монтаж под TikTok и хайлайты стримов: динамичные шортсы, чистый звук, субтитры.",
       aboutLead: "Беру сырьё со стрима и собираю ролик, который досматривают до конца.",
@@ -695,7 +684,7 @@ const T = {
       secSchedule:"Schedule", noteMsk:"MSK",
       secClips:"Clips", noteHighlights:"highlights",
       secGames:"Top games", noteRotation:"rotation", gamesEmpty:"No games yet",
-      secFaq:"FAQ", noteQuestions:"questions",
+      secFaq:"FAQ", noteQuestions:"questions", faqEmpty:"No questions yet",
       secContacts:"Contacts", noteConnect:"connect",
       liveTag:"live",
       playerNow:"now on schedule", playerOffLabel:"day off today", playerOffTitle:"Next stream — tomorrow",
@@ -717,18 +706,7 @@ const T = {
       { dow:"Sunday",    game:"Day off — resting", off:true }
     ],
     games: [],
-    faq: [
-      { q:"What's your setup?",
-        a:"PC: Ryzen 7, 32 GB RAM and an RTX-class GPU. The stream runs at 1080p60, audio through a condenser mic." },
-      { q:"Can we play together?",
-        a:"Yes! On Fridays during Games night I invite viewers into the lobby. The queue forms live during the stream — watch the chat." },
-      { q:"How can I support the channel?",
-        a:"The most valuable thing is being in the chat and sharing the stream with friends. Subscriptions, donations and stream goals are also available." },
-      { q:"Do you edit videos / shorts?",
-        a:"Yes! I make vertical videos and highlights — check prices and work in the 'Editing' tab at the top." },
-      { q:"Are there chat rules?",
-        a:"Three simple ones: no toxicity, no spoilers, no ads without asking. Everything else is chill." }
-    ],
+    faq: [],
     montage: {
       tagline: "Editing for TikTok and stream highlights: dynamic shorts, clean audio, subtitles.",
       aboutLead: "I take raw stream footage and cut a video people watch to the end.",
@@ -1012,6 +990,15 @@ const T = {
   }
   function renderFaq(L){
     var box = $("faq-list"); box.innerHTML = "";
+    if (!L.faq || !L.faq.length){        // пусто — приглушённая строка по центру
+      box.classList.add("is-empty");
+      var e = document.createElement("p");
+      e.className = "faq-empty";
+      e.textContent = L.ui.faqEmpty;
+      box.appendChild(e);
+      return;
+    }
+    box.classList.remove("is-empty");
     L.faq.forEach(function(f){
       var item = document.createElement("details"); item.className="faq-item";
       item.innerHTML =
