@@ -298,18 +298,9 @@ section{ padding-block:clamp(52px, 8vw, 88px); scroll-margin-top:104px; }
   letter-spacing:.04em; color:var(--ink); white-space:nowrap;
 }
 .track.is-off .t-day,.track.is-off .t-time{ color:var(--ink-2); }
-.track.is-today{ background:rgba(224,39,24,.05); }
-.track.is-today .t-num{ color:var(--accent); }
+.track.is-today{ background:rgba(224,39,24,.05); }   /* подсветка строки текущего дня */
+.track.is-today .t-num{ color:var(--accent); }        /* красный номер дня слева */
 .track.is-today .t-day{ color:var(--ink); }
-.track.is-today .t-live{
-  display:inline-flex; align-items:center; gap:6px;
-  font-family:var(--ff-grot); font-weight:800; font-size:.66rem;
-  letter-spacing:.14em; text-transform:uppercase; color:var(--accent);
-  margin-left:10px; vertical-align:middle;
-}
-.track.is-today .t-live::before{
-  content:""; width:7px; height:7px; border-radius:50%; background:var(--accent);
-}
 
 /* ===================================================================
    ИГРЫ — нумерованный editorial-список
@@ -1045,8 +1036,7 @@ const T = {
       row.innerHTML =
         '<span class="t-num">' + String(i+1).padStart(2,"0") + '</span>' +
         '<div class="t-main">' +
-          '<div class="t-day">' + escapeHtml(d.dow) +
-            (isToday ? '<span class="t-live">' + escapeHtml(L.ui.liveTag) + '</span>' : '') + '</div>' +
+          '<div class="t-day">' + escapeHtml(d.dow) + '</div>' +
           (d.game ? '<div class="t-game">' + escapeHtml(d.game) + '</div>' : '') +
         '</div>';
       box.appendChild(row);
